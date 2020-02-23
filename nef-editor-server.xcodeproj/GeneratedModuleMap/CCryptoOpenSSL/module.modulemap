@@ -1,0 +1,4 @@
+module CCryptoOpenSSL {
+    umbrella "/Users/juan/47Degrees/nef-editor-server/.build/checkouts/crypto/Sources/CCryptoOpenSSL/include"
+    export *
+}
