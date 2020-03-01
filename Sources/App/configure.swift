@@ -12,5 +12,14 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     // middlewares.use(FileMiddleware.self) // Serves files from `Public/` directory
     middlewares.use(ErrorMiddleware.self) // Catches errors and converts to HTTP response
     services.register(middlewares)
+    
+    // Configure websocket
+    let wss = NIOWebSocketServer.default()
+    wss.get("playground") { ws, req in
+        ws.onText { ws, text in
+            ws.send(text)
+        }
+    }
 
+    services.register(wss, as: WebSocketServer.self)
 }

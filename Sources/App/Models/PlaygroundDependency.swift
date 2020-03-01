@@ -1,4 +1,4 @@
-import Vapor
+import Foundation
 
 struct PlaygroundDependency: Codable {
     let name: String
