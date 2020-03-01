@@ -1208,8 +1208,6 @@
 		OBJ_3065 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_6 /* Package.swift */; };
 		OBJ_3076 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_497 /* Package.swift */; };
 		OBJ_3082 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_871 /* Package.swift */; };
-		OBJ_929 /* TodoController.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_10 /* TodoController.swift */; };
-		OBJ_930 /* Todo.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* Todo.swift */; };
 		OBJ_931 /* app.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_13 /* app.swift */; };
 		OBJ_932 /* boot.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_14 /* boot.swift */; };
 		OBJ_933 /* configure.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_15 /* configure.swift */; };
@@ -5106,7 +5104,6 @@
 		"FluentSQLite::FluentSQLite::Product" /* FluentSQLite.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FluentSQLite.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		"HTTP::HTTP::Product" /* HTTP.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = HTTP.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		"Multipart::Multipart::Product" /* Multipart.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Multipart.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		OBJ_10 /* TodoController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoController.swift; sourceTree = "<group>"; };
 		OBJ_100 /* Pivot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pivot.swift; sourceTree = "<group>"; };
 		OBJ_101 /* SoftDeletable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoftDeletable.swift; sourceTree = "<group>"; };
 		OBJ_103 /* FluentProperty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FluentProperty.swift; sourceTree = "<group>"; };
@@ -5124,7 +5121,6 @@
 		OBJ_116 /* QueryBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueryBuilder.swift; sourceTree = "<group>"; };
 		OBJ_118 /* Children.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Children.swift; sourceTree = "<group>"; };
 		OBJ_119 /* Parent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Parent.swift; sourceTree = "<group>"; };
-		OBJ_12 /* Todo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Todo.swift; sourceTree = "<group>"; };
 		OBJ_120 /* Siblings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Siblings.swift; sourceTree = "<group>"; };
 		OBJ_122 /* DatabasesConfig+References.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabasesConfig+References.swift"; sourceTree = "<group>"; };
 		OBJ_123 /* SchemaBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchemaBuilder.swift; sourceTree = "<group>"; };
@@ -6725,7 +6721,6 @@
 		OBJ_11 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				OBJ_12 /* Todo.swift */,
 				0D226C022402AB9300A260E9 /* PlaygroundDependency.swift */,
 				0D226C032402AB9300A260E9 /* PlaygroundRecipe.swift */,
 			);
@@ -7746,7 +7741,7 @@
 			path = ".build/checkouts/database-kit/Sources/DatabaseKit";
 			sourceTree = SOURCE_ROOT;
 		};
-		OBJ_5 /*  */ = {
+		OBJ_5 = {
 			isa = PBXGroup;
 			children = (
 				OBJ_6 /* Package.swift */,
@@ -7760,7 +7755,6 @@
 				OBJ_922 /* web.Dockerfile */,
 				OBJ_923 /* CONTRIBUTING.md */,
 			);
-			name = "";
 			sourceTree = "<group>";
 		};
 		OBJ_50 /* Row */ = {
@@ -8939,7 +8933,6 @@
 		OBJ_9 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				OBJ_10 /* TodoController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -10597,7 +10590,7 @@
 			knownRegions = (
 				en,
 			);
-			mainGroup = OBJ_5 /*  */;
+			mainGroup = OBJ_5;
 			productRefGroup = OBJ_872 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -11798,8 +11791,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 0;
 			files = (
-				OBJ_929 /* TodoController.swift in Sources */,
-				OBJ_930 /* Todo.swift in Sources */,
 				OBJ_931 /* app.swift in Sources */,
 				0D226C042402AB9300A260E9 /* PlaygroundDependency.swift in Sources */,
 				OBJ_932 /* boot.swift in Sources */,
