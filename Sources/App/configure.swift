@@ -16,9 +16,7 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     // Configure websocket
     let wss = NIOWebSocketServer.default()
     wss.get("playground") { ws, req in
-        ws.onText { ws, text in
-            ws.send(text)
-        }
+        ws.onText(WebSocketHandler.handle(webSocket:text:))
     }
 
     services.register(wss, as: WebSocketServer.self)
