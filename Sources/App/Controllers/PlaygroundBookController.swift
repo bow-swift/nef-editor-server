@@ -26,25 +26,27 @@ final class PlaygroundBookController {
     // MARK: builders
     private func buildRecipe(_ recipe: PlaygroundRecipe, webSocket: WebSocket) {
         let console = PlaygroundBookConsole(webSocket: webSocket)
-        let io = buildPlaygroundBook(for: recipe, console: console)
-        io.unsafeRunAsync { either in self.send(either, in: webSocket) }
+        let sender = curry(self.send(in:_:))(webSocket)
+        
+        buildPlaygroundBook(for: recipe)
+            .unsafeRunAsync(with: console, sender)
     }
     
-    private func buildPlaygroundBook(for recipe: PlaygroundRecipe, console: nef.Console) -> IO<nef.Error, URL> {
+    private func buildPlaygroundBook(for recipe: PlaygroundRecipe) -> EnvIO<nef.Console, nef.Error, PlaygroundBookGenerated> {
         let package = recipe.swiftPackage
-        let tmp = URL(string: "")! // TODO
+        let tmp = URL(fileURLWithPath: NSTemporaryDirectory())
         
-        return nef.SwiftPlayground
-            .render(packageContent: package.content, name: package.name, output: tmp)
-            .provide(console)
+        return nef.SwiftPlayground.render(packageContent: package.content, name: package.name, output: tmp)
+            .map(PlaygroundBookGenerated.init(url:))^
     }
     
     // MARK: senders
-    private func send(_ either: Either<nef.Error, URL>, in webSocket: WebSocket) {
+    private func send(in webSocket: WebSocket, _ either: Either<nef.Error, PlaygroundBookGenerated>) {
         _ = either.mapLeft { error in
-            fatalError() // TODO
-        }.map { url in
-            fatalError() // TODO
+            let socketError = WebSocketError(description: "\(error)", code: "500")
+            webSocket.send(.error(socketError))
+        }.map { playground in
+            webSocket.send(.playgroundBookGenerated(playground))
         }
     }
     
