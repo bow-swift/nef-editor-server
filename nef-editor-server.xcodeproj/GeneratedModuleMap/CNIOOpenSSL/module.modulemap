@@ -1,4 +1,0 @@
-module CNIOOpenSSL {
-    umbrella "/Users/juan/47Degrees/nef-editor-server/.build/checkouts/swift-nio-ssl/Sources/CNIOOpenSSL/include"
-    export *
-}
