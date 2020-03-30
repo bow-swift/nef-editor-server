@@ -2,6 +2,24 @@
   "object": {
     "pins": [
       {
+        "package": "Bow",
+        "repositoryURL": "https://github.com/bow-swift/bow",
+        "state": {
+          "branch": "master",
+          "revision": "4119e3fff7aac31d2f0c67f22a99fa4cc0e9fef2",
+          "version": null
+        }
+      },
+      {
+        "package": "Chalk",
+        "repositoryURL": "https://github.com/mxcl/Chalk.git",
+        "state": {
+          "branch": null,
+          "revision": "9aa9f348b86db3cf6702a3e43c081ecec80cf3c7",
+          "version": "0.4.0"
+        }
+      },
+      {
         "package": "Console",
         "repositoryURL": "https://github.com/vapor/console.git",
         "state": {
@@ -38,6 +56,15 @@
         }
       },
       {
+        "package": "FileCheck",
+        "repositoryURL": "https://github.com/llvm-swift/FileCheck.git",
+        "state": {
+          "branch": null,
+          "revision": "9ed91cc30a1a325d989fac117f3f3065a16b9f76",
+          "version": "0.2.3"
+        }
+      },
+      {
         "package": "HTTP",
         "repositoryURL": "https://github.com/vapor/http.git",
         "state": {
@@ -56,12 +83,30 @@
         }
       },
       {
+        "package": "nef",
+        "repositoryURL": "https://github.com/bow-swift/nef.git",
+        "state": {
+          "branch": "develop",
+          "revision": "09b8968d55e0cfdae9332fd7fc247ceecf92e6df",
+          "version": null
+        }
+      },
+      {
         "package": "Routing",
         "repositoryURL": "https://github.com/vapor/routing.git",
         "state": {
           "branch": null,
           "revision": "d76f339c9716785e5079af9d7075d28ff7da3d92",
           "version": "3.1.0"
+        }
+      },
+      {
+        "package": "RxSwift",
+        "repositoryURL": "https://github.com/ReactiveX/RxSwift.git",
+        "state": {
+          "branch": null,
+          "revision": "b3e888b4972d9bc76495dd74d30a8c7fad4b9395",
+          "version": "5.0.1"
         }
       },
       {
@@ -107,6 +152,33 @@
           "branch": null,
           "revision": "37760e9a52030bb9011972c5213c3350fa9d41fd",
           "version": "1.0.0"
+        }
+      },
+      {
+        "package": "swift-tools-support-core",
+        "repositoryURL": "https://github.com/apple/swift-tools-support-core.git",
+        "state": {
+          "branch": null,
+          "revision": "693aba4c4c9dcc4767cc853a0dd38bf90ad8c258",
+          "version": "0.0.1"
+        }
+      },
+      {
+        "package": "SwiftCheck",
+        "repositoryURL": "https://github.com/typelift/SwiftCheck.git",
+        "state": {
+          "branch": null,
+          "revision": "077c096c3ddfc38db223ac8e525ad16ffb987138",
+          "version": "0.12.0"
+        }
+      },
+      {
+        "package": "Swiftline",
+        "repositoryURL": "https://github.com/bow-swift/Swiftline",
+        "state": {
+          "branch": null,
+          "revision": "f8920ed12233e6c0041213ed0befc1ff7e5e26bf",
+          "version": "0.5.4"
         }
       },
       {
