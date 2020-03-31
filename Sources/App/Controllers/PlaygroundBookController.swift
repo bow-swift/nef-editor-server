@@ -4,32 +4,31 @@ import Bow
 import BowEffects
 
 final class PlaygroundBookController {
+    private var queue: DispatchQueue { .init(label: String(describing: PlaygroundBookController.self), qos: .userInitiated) }
     
     func handler(webSocket: WebSocket, request: Request) throws {
-        webSocket.onText { socket, text in self.handle(webSocket: socket, text: text) }
+        webSocket.onText { socket, text in self.handle(webSocket: socket, text: text, eventLoop: request.eventLoop) }
     }
     
-    private func handle(webSocket: WebSocket, text: String) {
+    private func handle(webSocket: WebSocket, text: String, eventLoop: EventLoop) {
         guard let data = text.data(using: .utf8),
               let incomingCommand = try? JSONDecoder().decode(PlaygroundBookCommand.Incoming.self, from: data) else {
-                sendUnsupportedError(in: webSocket); return
+                sendUnsupportedError(text: text, in: webSocket); return
         }
         
         switch incomingCommand {
         case .recipe(let recipe):
             buildRecipe(recipe, webSocket: webSocket)
         case .unsupported:
-            sendUnsupportedError(in: webSocket)
+            sendUnsupportedError(text: text, in: webSocket)
         }
     }
     
     // MARK: builders
     private func buildRecipe(_ recipe: PlaygroundRecipe, webSocket: WebSocket) {
         let console = PlaygroundBookConsole(webSocket: webSocket)
-        let sender = curry(self.send(in:_:))(webSocket)
-        
-        buildPlaygroundBook(for: recipe)
-            .unsafeRunAsync(with: console, sender)
+        let either = buildPlaygroundBook(for: recipe).unsafeRunSyncEither(with: console, on: queue)
+        send(in: webSocket, either)
     }
     
     private func buildPlaygroundBook(for recipe: PlaygroundRecipe) -> EnvIO<nef.Console, nef.Error, PlaygroundBookGenerated> {
@@ -37,7 +36,7 @@ final class PlaygroundBookController {
         let tmp = URL(fileURLWithPath: NSTemporaryDirectory())
         
         return nef.SwiftPlayground.render(packageContent: package.content, name: package.name, output: tmp)
-            .map(PlaygroundBookGenerated.init(url:))^
+                                  .map { url in .init(name: package.name, url: url) }^
     }
     
     // MARK: senders
@@ -50,8 +49,8 @@ final class PlaygroundBookController {
         }
     }
     
-    private func sendUnsupportedError(in webSocket: WebSocket) {
-        let unsupportedError = WebSocketError(description: "Unsupported message", code: "404")
+    private func sendUnsupportedError(text: String, in webSocket: WebSocket) {
+        let unsupportedError = WebSocketError(description: "Unsupported message: \(text)", code: "404")
         webSocket.send(.error(unsupportedError))
     }
 }
