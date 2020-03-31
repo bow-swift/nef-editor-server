@@ -9,12 +9,11 @@ struct PlaygroundBookStatus: Codable {
     
     struct Task: Codable {
         let information: [String]
-        let durationInSeconds: UInt
+        let durationInSeconds: Double
         let state: PlaygroundBookStatus.State
     }
     
-    let totalSteps: UInt
-    let currentStep: UInt
+    let progress: Double
     let historical: [Task]
     let currentTask: Task
 }
