@@ -1,7 +1,6 @@
 import Foundation
 
 enum PlaygroundBookCommand {
-    
     enum Outgoing: Encodable {
         case status(PlaygroundBookStatus)
         case playgroundBookGenerated(PlaygroundBookGenerated)
