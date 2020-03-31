@@ -6,7 +6,7 @@ import BowEffects
 final class PlaygroundBookConsole: nef.Console {
     private let webSocket: WebSocket
     
-    private let historical: [PlaygroundBookStatus.Task] = []
+    private var historical: [PlaygroundBookStatus.Task] = []
     private var lastStep: Step = .empty
     
     init(webSocket: WebSocket) {
@@ -21,14 +21,6 @@ final class PlaygroundBookConsole: nef.Console {
         IO.invoke { self.update(step: step, information: information, state: .running) }^
     }
     
-    func printStatus<E: Swift.Error>(step: Step, success: Bool) -> IO<E, Void> {
-        IO.invoke { self.update(step: step, information: [], state: success ? .succesful : .failure) }^
-    }
-    
-    func printStatus<E: Swift.Error>(step: Step, information: String, success: Bool) -> IO<E, Void> {
-        IO.invoke { self.update(step: step, information: [information], state: success ? .succesful : .failure) }^
-    }
-    
     func printStatus<E: Swift.Error>(success: Bool) -> IO<E, Void> {
         IO.invoke { self.update(step: Step.empty, information: [], state: success ? .succesful : .failure) }^
     }
@@ -39,26 +31,26 @@ final class PlaygroundBookConsole: nef.Console {
     
     // MARK: internal helpers
     private func update(step: Step, information: [String], state: PlaygroundBookStatus.State) {
-        let currentStep = step == .empty ? lastStep : step
-//        self.totalSteps  = step.total
-//        self.currentStep = step.partial
-//
-//        self.task = step.total == step.partial ? "Completed!"
-//                                               : status == .failure ? "Error!" : task
-//        self.details = details.isEmpty ? self.details : details.joined(separator: " - ")
-//        self.historical = self.lastTasks.map { "✓ \($0)"}.joined(separator: "\n")
-//
-//        self.status  = status
-//        self.duration = step.estimatedDuration
-//
-//        if !task.isEmpty { self.lastTasks.insert(task, at: 0) }
+        let currentStep = step == .empty ? self.lastStep : step
+        let progress = (max(Double(currentStep.partial), 0) / max(Double(currentStep.total), 1)) * 100.0
+        
+        let currentTask = PlaygroundBookStatus.Task(information: information,
+                                                    durationInSeconds: step.estimatedDuration.double ?? 0,
+                                                    state: state)
+        
+        webSocket.send(.status(.init(progress: progress,
+                                     historical: self.historical,
+                                     currentTask: currentTask)))
+        
+        // update state
+        lastStep = currentStep
+        historical = historical.append(currentTask)
     }
 }
 
 extension Step: Equatable {
     public static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.partial == rhs.partial &&
-        lhs.total == rhs.total &&
-        lhs.estimatedDuration == rhs.estimatedDuration
+        lhs.total == rhs.total
     }
 }
