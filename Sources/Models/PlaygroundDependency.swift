@@ -1,15 +1,21 @@
 import Foundation
 
-struct PlaygroundDependency: Codable {
-    enum Requirement: Codable {
+public struct PlaygroundDependency: Codable {
+    public enum Requirement: Codable {
         case version(String)
         case branch(String)
         case revision(String)
     }
     
-    let name: String
-    let url: String
-    let requirement: Requirement
+    public let name: String
+    public let url: String
+    public let requirement: Requirement
+    
+    public init(name: String, url: String, requirement: Requirement) {
+        self.name = name
+        self.url = url
+        self.requirement = requirement
+    }
 }
 
 
@@ -22,7 +28,7 @@ extension PlaygroundDependency.Requirement {
         case revision
     }
     
-    func encode(to encoder: Encoder) throws {
+    public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         
         switch self {
@@ -35,7 +41,7 @@ extension PlaygroundDependency.Requirement {
         }
     }
     
-   init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
            
         if let version = try? container.decode(String.self, forKey: .version) {

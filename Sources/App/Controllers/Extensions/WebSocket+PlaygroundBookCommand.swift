@@ -1,4 +1,5 @@
 import Vapor
+import Models
 
 extension WebSocket {
     func send(_ command: PlaygroundBookCommand.Outgoing) {

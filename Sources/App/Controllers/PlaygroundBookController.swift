@@ -2,6 +2,7 @@ import Vapor
 import nef
 import Bow
 import BowEffects
+import Models
 
 final class PlaygroundBookController {
     private var queue: DispatchQueue { .init(label: String(describing: PlaygroundBookController.self), qos: .userInitiated) }
