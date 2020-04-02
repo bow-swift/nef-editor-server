@@ -3,7 +3,7 @@ import nef
 import Bow
 import BowEffects
 
-final class PlaygroundBookConsole: nef.Console {
+final class PlaygroundBookConsole: nef.Console, WebSocketCommandOutput {
     private let config: WebSocketConfig
     
     init(config: WebSocketConfig) {
@@ -31,9 +31,7 @@ final class PlaygroundBookConsole: nef.Console {
         let stepInfo = PlaygroundBookStatus.Step(information: information.joined(separator: "\n"), status: status)
         let outgoing = PlaygroundBookCommand.Outgoing.status(.init(step: stepInfo, progress: 0))
         
-        return EnvIO<WebSocketConfig, WebSocketError, Void>.lazy()^
-            .send(command: outgoing)
-            .ignoreError()
+        return send(command: outgoing).ignoreError()
     }
 }
 
