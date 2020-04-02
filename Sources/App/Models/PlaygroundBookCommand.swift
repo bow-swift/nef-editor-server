@@ -4,7 +4,7 @@ enum PlaygroundBookCommand {
     enum Outgoing: Encodable {
         case status(PlaygroundBookStatus)
         case playgroundBookGenerated(PlaygroundBookGenerated)
-        case error(WebSocketError)
+        case error(PlaygroundBookCommandError)
     }
     
     enum Incoming: Decodable {

@@ -4,8 +4,6 @@ import Bow
 import BowEffects
 
 final class PlaygroundBookController {
-    private var queue: DispatchQueue { .init(label: String(describing: PlaygroundBookController.self), qos: .userInitiated) }
-    
     func handler(webSocket: WebSocket, request: Request) throws {
         webSocket.onText { socket, text in self.handle(webSocket: socket, text: text, eventLoop: request.eventLoop) }
     }
@@ -25,7 +23,8 @@ final class PlaygroundBookController {
     }
     
     // MARK: builders
-    private func buildRecipe(_ recipe: PlaygroundRecipe, webSocket: WebSocket) {
+    private func buildRecipe(_ recipe: PlaygroundRecipe) -> EnvIO<WebSocketConfig, WebSocketError, Void> {
+        let queue: DispatchQueue = .init(label: String(describing: PlaygroundBookController.self), qos: .userInitiated)
         let console = PlaygroundBookConsole(webSocket: webSocket)
         let either = buildPlaygroundBook(for: recipe).unsafeRunSyncEither(with: console, on: queue)
         send(in: webSocket, either)
@@ -42,7 +41,7 @@ final class PlaygroundBookController {
     // MARK: senders
     private func send(in webSocket: WebSocket, _ either: Either<nef.Error, PlaygroundBookGenerated>) {
         _ = either.mapLeft { error in
-            let socketError = WebSocketError(description: "\(error)", code: "500")
+            let socketError = PlaygroundBookCommandError(description: "\(error)", code: "500")
             webSocket.send(.error(socketError))
         }.map { playground in
             webSocket.send(.playgroundBookGenerated(playground))
@@ -50,7 +49,7 @@ final class PlaygroundBookController {
     }
     
     private func sendUnsupportedError(text: String, in webSocket: WebSocket) {
-        let unsupportedError = WebSocketError(description: "Unsupported message: \(text)", code: "404")
+        let unsupportedError = PlaygroundBookCommandError(description: "Unsupported message: \(text)", code: "404")
         webSocket.send(.error(unsupportedError))
     }
 }
