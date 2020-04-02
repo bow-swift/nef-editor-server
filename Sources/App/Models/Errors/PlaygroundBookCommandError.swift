@@ -1,6 +1,6 @@
  import Foundation
 
-struct PlaygroundBookCommandError: Encodable {
+struct PlaygroundBookCommandError: Error, Encodable {
     let description: String
     let code: String
 }

@@ -1,7 +1,9 @@
 import Foundation
 import nef
 
-struct PlaygroundBookCongif {
+struct PlaygroundBookConfig {
     let console: nef.Console
-    let config: WebSocketConfig
+    let outputDirectory: URL
+    let commandDecoder: WebSocketDecoder
+    let webSocketConfig: WebSocketConfig
 }

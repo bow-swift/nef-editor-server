@@ -37,10 +37,10 @@ final class PlaygroundBookConsole: nef.Console {
         let currentTask = PlaygroundBookStatus.Task(information: information,
                                                     durationInSeconds: step.estimatedDuration.double ?? 0,
                                                     state: state)
-        
-        webSocket.send(.status(.init(progress: progress,
-                                     historical: self.historical,
-                                     currentTask: currentTask)))
+        fatalError()
+//        webSocket.send(.status(.init(progress: progress,
+//                                     historical: self.historical,
+//                                     currentTask: currentTask)))
         
         // update state
         lastStep = currentStep
