@@ -1,9 +1,9 @@
 import Foundation
 
 enum WebSocketError: Error {
-    case encoder(error: Error)
-    case decoder(error: Error)
-    case decoder(text: String)
-    case send(error: Error)
-    case send(data: Data)
+    case encoding(error: Error)
+    case decoding(error: Error)
+    case decoding(text: String)
+    case sending(error: Error)
+    case sending(data: Data)
 }

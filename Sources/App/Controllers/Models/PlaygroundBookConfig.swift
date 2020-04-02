@@ -4,6 +4,6 @@ import nef
 struct PlaygroundBookConfig {
     let console: nef.Console
     let outputDirectory: URL
-    let commandDecoder: WebSocketDecoder
+    let commandDecoder: ResponseDecoder
     let webSocketConfig: WebSocketConfig
 }

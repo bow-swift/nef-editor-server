@@ -6,48 +6,32 @@ import BowEffects
 final class PlaygroundBookConsole: nef.Console {
     private let config: WebSocketConfig
     
-    private var historical: [PlaygroundBookStatus.Task] = []
-    private var lastStep: Step = .empty
-    
     init(config: WebSocketConfig) {
         self.config = config
     }
     
     func printStep<E: Swift.Error>(step: Step, information: String) -> IO<E, Void> {
-        update(step: step, information: [information], state: .running)
+        update(step: step, information: [information], status: .running)
     }
     
     func printSubstep<E: Swift.Error>(step: Step, information: [String]) -> IO<E, Void> {
-        update(step: step, information: information, state: .running)
+        update(step: step, information: information, status: .running)
     }
     
     func printStatus<E: Swift.Error>(success: Bool) -> IO<E, Void> {
-        update(step: Step.empty, information: [], state: success ? .succesful : .failure)
+        update(step: Step.empty, information: [], status: success ? .succesful : .failure)
     }
     
     func printStatus<E: Swift.Error>(information: String, success: Bool) -> IO<E, Void> {
-        update(step: Step.empty, information: [information], state: success ? .succesful : .failure)
+        update(step: Step.empty, information: [information], status: success ? .succesful : .failure)
     }
     
     // MARK: internal helpers
-    private func update<E: Swift.Error>(step: Step, information: [String], state: PlaygroundBookStatus.State) -> IO<E, Void> {
-        let currentStep = step == .empty ? self.lastStep : step
-        let progress = (max(Double(currentStep.partial), 0) / max(Double(currentStep.total), 1)) * 100.0
+    private func update<E: Swift.Error>(step: Step, information: [String], status: PlaygroundBookStatus.Status) -> IO<E, Void> {
+        let stepInfo = PlaygroundBookStatus.Step(information: information.joined(separator: "\n"), status: status)
+        let outgoing = PlaygroundBookCommand.Outgoing.status(.init(step: stepInfo, progress: 0))
         
-        let currentTask = PlaygroundBookStatus.Task(information: information,
-                                                    durationInSeconds: step.estimatedDuration.double ?? 0,
-                                                    state: state)
-        
-        let status = PlaygroundBookStatus(progress: progress,
-                                          historical: self.historical,
-                                          currentTask: currentTask)
-      
-        // update state
-        lastStep = currentStep
-        historical = historical.append(currentTask)
-        
-        // run send
-        return WebSocket.send(PlaygroundBookCommand.Outgoing.status(status))
+        return WebSocket.send(command: outgoing)
             .provide(config)^
             .ignoreError()^
     }

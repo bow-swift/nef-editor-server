@@ -1,6 +1,6 @@
 import Vapor
 
 struct WebSocketConfig {
-    let webSocket: WebSocket
-    let encoder: WebSocketEncoder
+    let webSocket: WebSocketOutput
+    let encoder: RequestEncoder
 }

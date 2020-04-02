@@ -2,7 +2,7 @@ import Foundation
 import BowEffects
 
 /// Make JSONEncoder conform to RequestEncoder
-extension JSONEncoder: WebSocketEncoder {
+extension JSONEncoder: RequestEncoder {
     func safeEncode<T>(_ value: T) -> IO<EncodingError, Data> where T : Encodable {
         IO.invoke {
             do {
@@ -17,7 +17,7 @@ extension JSONEncoder: WebSocketEncoder {
 }
 
 /// Make JSONDecoder conform to RequestDecoder
-extension JSONDecoder: WebSocketDecoder {
+extension JSONDecoder: ResponseDecoder {
     public func safeDecode<T>(_ type: T.Type, from data: Data) -> IO<DecodingError, T> where T : Decodable {
         IO.invoke {
             do {

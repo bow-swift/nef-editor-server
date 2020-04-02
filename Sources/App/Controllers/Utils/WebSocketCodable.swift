@@ -7,7 +7,7 @@ enum EncodingError: Error {
     case other(Error)
 }
 
-protocol WebSocketEncoder {
+protocol RequestEncoder {
     func safeEncode<T: Encodable>(_ value: T) -> IO<EncodingError, Data>
 }
 
@@ -18,6 +18,6 @@ public enum DecodingError: Error {
     case other(Error)
 }
 
-public protocol WebSocketDecoder {
+public protocol ResponseDecoder {
     func safeDecode<T: Decodable>(_ type: T.Type, from: Data) -> IO<DecodingError, T>
 }
