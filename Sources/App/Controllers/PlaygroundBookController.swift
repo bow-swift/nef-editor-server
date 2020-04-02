@@ -7,9 +7,9 @@ final class PlaygroundBookController {
     
     func handler(webSocket: WebSocket, request: Request) throws {
         let queue: DispatchQueue = .init(label: String(describing: PlaygroundBookController.self), qos: .userInitiated)
-        let console = PlaygroundBookConsole(webSocket: webSocket)
         let temporalDirectory = URL(fileURLWithPath: NSTemporaryDirectory())
         let webSocketConfig = WebSocketConfig(webSocket: webSocket, encoder: JSONEncoder())
+        let console = PlaygroundBookConsole(config: webSocketConfig)
         
         let playgroundConfig = PlaygroundBookConfig(console: console,
                                                     outputDirectory: temporalDirectory,
@@ -18,10 +18,11 @@ final class PlaygroundBookController {
         
         webSocket.onText { socket, text in
             _ = self.handle(text: text)
+                .report()
                 .unsafeRunSyncEither(with: playgroundConfig, on: queue)
         }
     }
-    
+
     func handle(text: String) -> EnvIO<PlaygroundBookConfig, PlaygroundBookCommandError, PlaygroundBookGenerated> {
         let command = EnvIO<PlaygroundBookConfig, PlaygroundBookCommandError, PlaygroundBookCommand.Incoming>.var()
         let output = EnvIO<PlaygroundBookConfig, PlaygroundBookCommandError, PlaygroundBookGenerated>.var()
@@ -35,7 +36,7 @@ final class PlaygroundBookController {
     func getCommand(text: String) -> EnvIO<PlaygroundBookConfig, PlaygroundBookCommandError, PlaygroundBookCommand.Incoming> {
         EnvIO { env in
             guard let data = text.data(using: .utf8) else {
-                return IO.raiseError(PlaygroundBookCommandError(description: "Unsupported message: \(text)", code: "404"))
+                return IO.raiseError(.init(description: "Unsupported message: \(text)", code: "404"))
             }
             
             return env.commandDecoder
@@ -59,7 +60,7 @@ final class PlaygroundBookController {
         case .recipe(let recipe):
             return buildPlaygroundBook(for: recipe)
         case .unsupported:
-            return EnvIO.raiseError(PlaygroundBookCommandError(description: "Unsupported command: \(command)", code: "404"))^
+            return EnvIO.raiseError(.init(description: "Unsupported command: \(command)", code: "404"))^
         }
     }
 }
