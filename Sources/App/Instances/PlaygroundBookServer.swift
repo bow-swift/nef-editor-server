@@ -1,23 +1,51 @@
 import Vapor
+import nef
+import Bow
+import BowEffects
 
 final class PlaygroundBookServer: PlaygroundBook {
-    private let output: URL
-    private let encoder: RequestEncoder
-    private let decoder: ResponseDecoder
     
-    init(output: URL, encoder: RequestEncoder, decoder: ResponseDecoder) {
-        self.output = output
-        self.encoder = encoder
-        self.decoder = decoder
+    func build(command text: String) -> EnvIO<PlaygroundBookConfig, PlaygroundBookCommandError, PlaygroundBookGenerated> {
+        let command = EnvIO<PlaygroundBookConfig, PlaygroundBookCommandError, PlaygroundBookCommand.Incoming>.var()
+        let output = EnvIO<PlaygroundBookConfig, PlaygroundBookCommandError, PlaygroundBookGenerated>.var()
+        
+        return binding(
+            command <- self.getCommand(text: text),
+             output <- self.buildPlaygroundBook(command: command.get),
+        yield: output.get)^.report()
     }
     
-    func configuration(webSocket: WebSocketOutput) -> PlaygroundBookConfig {
-        let webSocketConfig = WebSocketConfig(webSocket: webSocket, encoder: encoder)
-        let console = PlaygroundBookConsole(config: webSocketConfig)
-        
-        return .init(console: console,
-                     outputDirectory: output,
-                     commandDecoder: decoder,
-                     webSocketConfig: webSocketConfig)
+    private func getCommand(text: String) -> EnvIO<PlaygroundBookConfig, PlaygroundBookCommandError, PlaygroundBookCommand.Incoming> {
+        EnvIO { env in
+            guard let data = text.data(using: .utf8) else {
+                return IO.raiseError(.init(description: "Unsupported message: \(text)", code: "404"))
+            }
+            
+            return env.commandDecoder
+                      .safeDecode(PlaygroundBookCommand.Incoming.self, from: data)
+                      .mapError { e in PlaygroundBookCommandError(description: "\(e)", code: "404") }
+        }
+    }
+    
+    private func buildPlaygroundBook(command: PlaygroundBookCommand.Incoming) -> EnvIO<PlaygroundBookConfig, PlaygroundBookCommandError, PlaygroundBookGenerated> {
+        switch command {
+        case .recipe(let recipe):
+            return buildPlaygroundBook(for: recipe)
+        case .unsupported:
+            return EnvIO.raiseError(.init(description: "Unsupported command: \(command)", code: "404"))^
+        }
+    }
+    
+    private func buildPlaygroundBook(for recipe: PlaygroundRecipe) -> EnvIO<PlaygroundBookConfig, PlaygroundBookCommandError, PlaygroundBookGenerated> {
+        EnvIO { env in
+            let package = recipe.swiftPackage
+            return nef.SwiftPlayground.render(
+                packageContent: package.content,
+                name: package.name,
+                output: env.outputDirectory)
+                .provide(env.console)
+                .map { url in PlaygroundBookGenerated(name: package.name, url: url) }^
+                .mapError { e in PlaygroundBookCommandError(description: "\(e)", code: "500") }
+        }
     }
 }

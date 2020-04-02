@@ -1,9 +1,18 @@
 import Vapor
 
 public func routes(_ wss: NIOWebSocketServer) throws {
-    let playgroundBook = PlaygroundBookServer(output: URL(fileURLWithPath: NSTemporaryDirectory()),
-                                              encoder: JSONEncoder(),
-                                              decoder: JSONDecoder())
+    wss.get("playground", use: PlaygroundBookController(playgroundBook: PlaygroundBookServer(),
+                                                        config: config).handler)
+}
+
+
+private func config(webSocket: WebSocketOutput) -> PlaygroundBookConfig {
+    let output = URL(fileURLWithPath: NSTemporaryDirectory())
+    let encoder = JSONEncoder()
+    let decoder = JSONDecoder()
     
-    wss.get("playground", use: PlaygroundBookController(playgroundBook: playgroundBook).handler)
+    return PlaygroundBookConfig(outputDirectory: output,
+                                encoder: encoder,
+                                decoder: decoder,
+                                webSocket: webSocket)
 }
