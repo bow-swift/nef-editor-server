@@ -46,6 +46,6 @@ extension Step: Equatable {
 
 extension EnvIO where A == Void {
     func ignoreError<E: Swift.Error, EE: Swift.Error>() -> EnvIO<D, EE, Void> where F == IOPartial<E> {
-        handleError { _ in }^.mapError { e in e as! EE}
+        handleError { _ in }^.mapError { e in e as! EE }
     }
 }
