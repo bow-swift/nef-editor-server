@@ -8,13 +8,15 @@ let package = Package(
     ],
     products: [
         .library(name: "nef-editor-server", targets: ["App"]),
+        .library(name: "NefEditorData", targets: ["NefEditorData"]),
     ],
     dependencies: [
         .package(name: "Vapor", url: "https://github.com/vapor/vapor.git", from: "3.0.0"),
         .package(name: "nef", url: "https://github.com/bow-swift/nef.git", .branch("develop"))
     ],
     targets: [
-        .target(name: "App", dependencies: ["Vapor", "nef"]),
+        .target(name: "NefEditorData"),
+        .target(name: "App", dependencies: ["NefEditorData", "Vapor", "nef"]),
         .target(name: "Run", dependencies: ["App"]),
         .testTarget(name: "AppTests", dependencies: ["App"])
     ]
