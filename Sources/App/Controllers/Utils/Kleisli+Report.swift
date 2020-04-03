@@ -22,8 +22,8 @@ extension Kleisli where F == IOPartial<PlaygroundBookCommandError>, D: HasWebSoc
         return binding(
             env <- .ask(),
             output <- env.get.webSocket.send(command: command)
-                             .provide(env.get)
-                             .mapError { e in .init(description: "\(e)", code: "500") }.env(),
+                         .contramap { _ in env.get }
+                         .mapError { e in PlaygroundBookCommandError(description: "\(e)", code: "500") },
         yield: ())^
     }
 }

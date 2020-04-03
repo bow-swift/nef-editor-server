@@ -3,7 +3,7 @@ import Bow
 import BowEffects
 
 
-/// Make `WebSocket` conforms to `WebSocketOutput`
+/// Make WebSocket conforms to WebSocketOutput
 extension WebSocket: WebSocketOutput {
     
     func send<D>(binary: Data) -> EnvIO<D, WebSocketError, Void> {

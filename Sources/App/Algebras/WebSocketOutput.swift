@@ -8,7 +8,6 @@ protocol HasWebSocketOutput {
 
 protocol WebSocketOutput {
     func send<D>(binary: Data) -> EnvIO<D, WebSocketError, Void>
-    func send<C: Encodable>(command: C) -> EnvIO<HasCommandEncoder, WebSocketError, Void>
 }
 
 extension WebSocketOutput {

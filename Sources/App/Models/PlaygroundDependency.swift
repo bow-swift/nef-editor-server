@@ -45,7 +45,7 @@ extension PlaygroundDependency.Requirement {
         } else if let revision = try? container.decode(String.self, forKey: .revision) {
             self = .revision(revision)
         } else {
-            throw PlaygroundBookCommandError(description: "invalid value found in decoder from `PlaygroundDependency.Requirement`",
+            throw PlaygroundBookCommandError(description: "invalid value found in decoder from PlaygroundDependency.Requirement",
                                              code: "404")
         }
     }
