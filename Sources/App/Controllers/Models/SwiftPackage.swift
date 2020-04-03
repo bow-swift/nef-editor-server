@@ -1,4 +1,5 @@
 import Foundation
+import NefEditorData
 
 struct SwiftPackage: Codable {
     let name: String

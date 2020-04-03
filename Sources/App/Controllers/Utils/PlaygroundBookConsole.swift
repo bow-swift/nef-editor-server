@@ -2,6 +2,7 @@ import Vapor
 import nef
 import Bow
 import BowEffects
+import NefEditorData
 
 final class PlaygroundBookConsole: nef.Console, HasWebSocketOutput, HasCommandEncoder {
     let webSocket: WebSocketOutput

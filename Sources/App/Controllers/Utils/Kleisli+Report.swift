@@ -1,6 +1,7 @@
 import Vapor
 import Bow
 import BowEffects
+import NefEditorData
 
 extension Kleisli where F == IOPartial<PlaygroundBookCommandError>, D: HasWebSocketOutput & HasCommandEncoder, A == PlaygroundBookGenerated {
     

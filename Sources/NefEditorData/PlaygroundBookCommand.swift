@@ -1,13 +1,13 @@
 import Foundation
 
-enum PlaygroundBookCommand {
-    enum Outgoing: Encodable {
+public enum PlaygroundBookCommand {
+    public enum Outgoing: Encodable {
         case status(PlaygroundBookStatus)
         case playgroundBookGenerated(PlaygroundBookGenerated)
         case error(PlaygroundBookCommandError)
     }
     
-    enum Incoming: Decodable {
+    public enum Incoming: Decodable {
         case recipe(PlaygroundRecipe)
         case unsupported
     }
@@ -23,7 +23,7 @@ extension PlaygroundBookCommand.Outgoing {
         case error
     }
     
-    func encode(to encoder: Encoder) throws {
+    public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         
         switch self {
@@ -42,7 +42,7 @@ extension PlaygroundBookCommand.Incoming {
         case recipe
     }
     
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         if let container = try? decoder.container(keyedBy: CodingKeys.self),
            let recipe = try? container.decode(PlaygroundRecipe.self, forKey: .recipe) {
             self = .recipe(recipe)
