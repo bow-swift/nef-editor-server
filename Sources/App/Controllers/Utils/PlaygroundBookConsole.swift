@@ -29,7 +29,7 @@ final class PlaygroundBookConsole: nef.Console, HasWebSocketOutput, HasCommandEn
     }
     
     // MARK: internal helpers
-    private func update<E: Swift.Error>(step: Step, information: [String], status: PlaygroundBookStatus.Status) -> EnvIO<HasCommandEncoder, E, Void> {
+    private func update<D: HasCommandEncoder, E: Swift.Error>(step: Step, information: [String], status: PlaygroundBookStatus.Status) -> EnvIO<D, E, Void> {
         let stepInfo = PlaygroundBookStatus.Step(information: information.joined(separator: "\n"), status: status)
         let outgoing = PlaygroundBookCommand.Outgoing.status(.init(step: stepInfo, progress: 0))
         

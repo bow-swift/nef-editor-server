@@ -11,9 +11,9 @@ protocol WebSocketOutput {
 }
 
 extension WebSocketOutput {
-    func send<C: Encodable>(command: C) -> EnvIO<HasCommandEncoder, WebSocketError, Void> {
-        let encoder = EnvIO<HasCommandEncoder, WebSocketError, HasCommandEncoder>.var()
-        let data = EnvIO<HasCommandEncoder, WebSocketError, Data>.var()
+    func send<C: Encodable, D: HasCommandEncoder>(command: C) -> EnvIO<D, WebSocketError, Void> {
+        let encoder = EnvIO<D, WebSocketError, D>.var()
+        let data = EnvIO<D, WebSocketError, Data>.var()
         
         return binding(
            encoder <- .ask(),

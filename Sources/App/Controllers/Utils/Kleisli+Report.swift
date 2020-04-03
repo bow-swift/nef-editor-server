@@ -17,12 +17,10 @@ extension Kleisli where F == IOPartial<PlaygroundBookCommandError>, D: HasWebSoc
     
     private func send<C: Encodable>(command: C) -> EnvIO<D, PlaygroundBookCommandError, Void> {
         let env = EnvIO<D, PlaygroundBookCommandError, D>.var()
-        let output = EnvIO<D, PlaygroundBookCommandError, Void>.var()
         
         return binding(
             env <- .ask(),
-            output <- env.get.webSocket.send(command: command)
-                         .contramap(id)
+               |<-env.get.webSocket.send(command: command)
                          .mapError { e in PlaygroundBookCommandError(description: "\(e)", code: "500") },
         yield: ())^
     }
