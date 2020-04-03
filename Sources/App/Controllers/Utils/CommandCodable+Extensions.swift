@@ -3,8 +3,8 @@ import BowEffects
 
 /// Make JSONEncoder conform to RequestEncoder
 extension JSONEncoder: RequestEncoder {
-    func safeEncode<T>(_ value: T) -> IO<EncodingError, Data> where T : Encodable {
-        IO.invoke {
+    func safeEncode<D, T>(_ value: T) -> EnvIO<D, EncodingError, Data> where T : Encodable {
+        EnvIO.invoke { _ in
             do {
                 return try self.encode(value)
             } catch let error as Swift.EncodingError {
@@ -18,8 +18,8 @@ extension JSONEncoder: RequestEncoder {
 
 /// Make JSONDecoder conform to RequestDecoder
 extension JSONDecoder: ResponseDecoder {
-    public func safeDecode<T>(_ type: T.Type, from data: Data) -> IO<DecodingError, T> where T : Decodable {
-        IO.invoke {
+    public func safeDecode<D, T>(_ type: T.Type, from data: Data) -> EnvIO<D, DecodingError, T> where T : Decodable {
+        EnvIO.invoke { _ in
             do {
                 return try self.decode(T.self, from: data)
             } catch let error as Swift.DecodingError {

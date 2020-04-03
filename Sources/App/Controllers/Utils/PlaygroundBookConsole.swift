@@ -3,35 +3,37 @@ import nef
 import Bow
 import BowEffects
 
-final class PlaygroundBookConsole: nef.Console, WebSocketCommandOutput {
-    private let config: WebSocketConfig
+final class PlaygroundBookConsole: nef.Console, HasWebSocketOutput, HasCommandEncoder {
+    let webSocket: WebSocketOutput
+    let commandEncoder: RequestEncoder
     
-    init(config: WebSocketConfig) {
-        self.config = config
+    init(webSocket: WebSocketOutput, encoder: RequestEncoder) {
+        self.webSocket = webSocket
+        self.commandEncoder = encoder
     }
     
     func printStep<E: Swift.Error>(step: Step, information: String) -> IO<E, Void> {
-        update(step: step, information: [information], status: .running).provide(config)
+        update(step: step, information: [information], status: .running).provide(self)
     }
     
     func printSubstep<E: Swift.Error>(step: Step, information: [String]) -> IO<E, Void> {
-        update(step: step, information: information, status: .running).provide(config)
+        update(step: step, information: information, status: .running).provide(self)
     }
     
     func printStatus<E: Swift.Error>(success: Bool) -> IO<E, Void> {
-        update(step: Step.empty, information: [], status: success ? .succesful : .failure).provide(config)
+        update(step: Step.empty, information: [], status: success ? .succesful : .failure).provide(self)
     }
     
     func printStatus<E: Swift.Error>(information: String, success: Bool) -> IO<E, Void> {
-        update(step: Step.empty, information: [information], status: success ? .succesful : .failure).provide(config)
+        update(step: Step.empty, information: [information], status: success ? .succesful : .failure).provide(self)
     }
     
     // MARK: internal helpers
-    private func update<E: Swift.Error>(step: Step, information: [String], status: PlaygroundBookStatus.Status) -> EnvIO<WebSocketConfig, E, Void> {
+    private func update<E: Swift.Error>(step: Step, information: [String], status: PlaygroundBookStatus.Status) -> EnvIO<HasCommandEncoder, E, Void> {
         let stepInfo = PlaygroundBookStatus.Step(information: information.joined(separator: "\n"), status: status)
         let outgoing = PlaygroundBookCommand.Outgoing.status(.init(step: stepInfo, progress: 0))
         
-        return send(command: outgoing).ignoreError()
+        return webSocket.send(command: outgoing).ignoreError()
     }
 }
 

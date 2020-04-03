@@ -16,15 +16,19 @@ final class PlaygroundBookServer: PlaygroundBook {
     }
     
     private func getCommand(text: String) -> EnvIO<PlaygroundBookConfig, PlaygroundBookCommandError, PlaygroundBookCommand.Incoming> {
-        EnvIO { env in
-            guard let data = text.data(using: .utf8) else {
-                return IO.raiseError(.init(description: "Unsupported message: \(text)", code: "404"))
-            }
-            
-            return env.commandDecoder
-                      .safeDecode(PlaygroundBookCommand.Incoming.self, from: data)
-                      .mapError { e in PlaygroundBookCommandError(description: "\(e)", code: "404") }
+        guard let data = text.data(using: .utf8) else {
+            return EnvIO.raiseError(PlaygroundBookCommandError(description: "Unsupported message: \(text)", code: "404"))^
         }
+            
+        let env = EnvIO<PlaygroundBookConfig, PlaygroundBookCommandError, PlaygroundBookConfig>.var()
+        let command = EnvIO<PlaygroundBookConfig, PlaygroundBookCommandError, PlaygroundBookCommand.Incoming>.var()
+        
+        return binding(
+            env <- .ask(),
+            command <- env.get.commandDecoder
+                              .safeDecode(PlaygroundBookCommand.Incoming.self, from: data)
+                              .mapError { e in .init(description: "\(e)", code: "404") },
+        yield: command.get)^
     }
     
     private func buildPlaygroundBook(command: PlaygroundBookCommand.Incoming) -> EnvIO<PlaygroundBookConfig, PlaygroundBookCommandError, PlaygroundBookGenerated> {

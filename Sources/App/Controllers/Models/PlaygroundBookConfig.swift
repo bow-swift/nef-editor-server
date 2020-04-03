@@ -1,16 +1,17 @@
 import Foundation
 import nef
 
-struct PlaygroundBookConfig {
+struct PlaygroundBookConfig: HasWebSocketOutput, HasCommandCodable {
     let outputDirectory: URL
     let commandDecoder: ResponseDecoder
-    let console: nef.Console & WebSocketCommandOutput
-    let webSocketConfig: WebSocketConfig
+    let console: PlaygroundBookConsole
+    
+    var webSocket: WebSocketOutput { self.console.webSocket }
+    var commandEncoder: RequestEncoder { self.console.commandEncoder }
     
     init(outputDirectory: URL, encoder: RequestEncoder, decoder: ResponseDecoder, webSocket: WebSocketOutput) {
-        self.webSocketConfig = WebSocketConfig(webSocket: webSocket, encoder: encoder)
-        self.console = PlaygroundBookConsole(config: webSocketConfig)
         self.outputDirectory = outputDirectory
         self.commandDecoder = decoder
+        self.console = PlaygroundBookConsole(webSocket: webSocket, encoder: encoder)
     }
 }

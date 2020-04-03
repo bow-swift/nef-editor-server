@@ -1,5 +1,4 @@
 import Vapor
-import BowEffects
 
 final class PlaygroundBookController {
     private let playgroundBook: PlaygroundBook

@@ -2,38 +2,28 @@ import Vapor
 import Bow
 import BowEffects
 
-extension Kleisli where F == IOPartial<PlaygroundBookCommandError>, D == PlaygroundBookConfig, A == PlaygroundBookGenerated {
+extension Kleisli where F == IOPartial<PlaygroundBookCommandError>, D: HasWebSocketOutput & HasCommandEncoder, A == PlaygroundBookGenerated {
     
-    func report() -> EnvIO<PlaygroundBookConfig, PlaygroundBookCommandError, PlaygroundBookGenerated> {
+    func report() -> EnvIO<D, PlaygroundBookCommandError, A> {
         foldMTap(
             { e in
-                self.reportError(e)
+                self.send(command: PlaygroundBookCommand.Outgoing.error(e))
             },
             { playground in
-                self.reportSuccess(playground)
+                self.send(command: PlaygroundBookCommand.Outgoing.playgroundBookGenerated(playground))
             }
         )
     }
     
-    private func reportError(_ error: PlaygroundBookCommandError) -> EnvIO<PlaygroundBookConfig, PlaygroundBookCommandError, Void> {
-        let env = EnvIO<PlaygroundBookConfig, PlaygroundBookCommandError, PlaygroundBookConfig>.var()
+    private func send<C: Encodable>(command: C) -> EnvIO<D, PlaygroundBookCommandError, Void> {
+        let env = EnvIO<D, PlaygroundBookCommandError, D>.var()
+        let output = EnvIO<D, PlaygroundBookCommandError, Void>.var()
         
         return binding(
             env <- .ask(),
-            |<-env.get.console.send(command: PlaygroundBookCommand.Outgoing.error(error))
-                .contramap(\PlaygroundBookConfig.webSocketConfig)
-                .mapError { e in .init(description: "\(e)", code: "500") },
-        yield: ())^
-    }
-
-    private func reportSuccess(_ playground: PlaygroundBookGenerated) -> EnvIO<PlaygroundBookConfig, PlaygroundBookCommandError, Void> {
-        let env = EnvIO<PlaygroundBookConfig, PlaygroundBookCommandError, PlaygroundBookConfig>.var()
-        
-        return binding(
-            env <- .ask(),
-            |<-env.get.console.send(command: PlaygroundBookCommand.Outgoing.playgroundBookGenerated(playground))
-                .contramap(\PlaygroundBookConfig.webSocketConfig)
-                .mapError { e in .init(description: "\(e)", code: "500") },
+            output <- env.get.webSocket.send(command: command)
+                             .provide(env.get)
+                             .mapError { e in .init(description: "\(e)", code: "500") }.env(),
         yield: ())^
     }
 }
