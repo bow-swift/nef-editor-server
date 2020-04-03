@@ -1,14 +1,18 @@
 import Vapor
 
-/// Register your application's routes here.
-public func routes(_ router: Router) throws {
-    // Basic "It works" example
-    router.get { req in
-        return "It works!"
-    }
+public func routes(_ wss: NIOWebSocketServer) throws {
+    wss.get("playground", use: PlaygroundBookController(playgroundBook: PlaygroundBookServer(),
+                                                        config: config).handler)
+}
+
+
+private func config(webSocket: WebSocketOutput) -> PlaygroundBookConfig {
+    let output = URL(fileURLWithPath: NSTemporaryDirectory())
+    let encoder = JSONEncoder()
+    let decoder = JSONDecoder()
     
-    // Basic "Hello, world!" example
-    router.get("hello") { req in
-        return "Hello, world!"
-    }
+    return PlaygroundBookConfig(outputDirectory: output,
+                                encoder: encoder,
+                                decoder: decoder,
+                                webSocket: webSocket)
 }
