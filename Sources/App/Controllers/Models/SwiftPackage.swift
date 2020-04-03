@@ -40,6 +40,12 @@ extension PlaygroundDependency.Requirement {
             return ".branch(\"\(branch)\")"
         case .revision(let revision):
             return ".revision(\"\(revision)\")"
+        case .range(let from, let to):
+            if to.isEmpty {
+                return "from: \"\(from)\""
+            } else {
+                return "\"\(from)\"...\"\(to)\""
+            }
         }
     }
 }
