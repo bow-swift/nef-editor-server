@@ -2,7 +2,7 @@ import Foundation
 
 public struct PlaygroundBookStatus: Codable {
     public enum Status: String, Codable {
-        case failure
+        case failed
         case succesful
         case running
     }

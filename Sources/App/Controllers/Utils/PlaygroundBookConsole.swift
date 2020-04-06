@@ -4,7 +4,7 @@ import Bow
 import BowEffects
 import NefEditorData
 
-final class PlaygroundBookConsole: nef.Console, HasWebSocketOutput, HasCommandEncoder {
+final class PlaygroundBookConsole: nef.ProgressReport, HasWebSocketOutput, HasCommandEncoder {
     let webSocket: WebSocketOutput
     let commandEncoder: RequestEncoder
     
@@ -13,40 +13,56 @@ final class PlaygroundBookConsole: nef.Console, HasWebSocketOutput, HasCommandEn
         self.commandEncoder = encoder
     }
     
-    func printStep<E: Swift.Error>(step: Step, information: String) -> IO<E, Void> {
-        update(step: step, information: [information], status: .running).provide(self)
-    }
-    
-    func printSubstep<E: Swift.Error>(step: Step, information: [String]) -> IO<E, Void> {
-        update(step: step, information: information, status: .running).provide(self)
-    }
-    
-    func printStatus<E: Swift.Error>(success: Bool) -> IO<E, Void> {
-        update(step: Step.empty, information: [], status: success ? .succesful : .failure).provide(self)
-    }
-    
-    func printStatus<E: Swift.Error>(information: String, success: Bool) -> IO<E, Void> {
-        update(step: Step.empty, information: [information], status: success ? .succesful : .failure).provide(self)
-    }
-    
-    // MARK: internal helpers
-    private func update<D: HasCommandEncoder, E: Swift.Error>(step: Step, information: [String], status: PlaygroundBookStatus.Status) -> EnvIO<D, E, Void> {
-        let stepInfo = PlaygroundBookStatus.Step(information: information.joined(separator: "\n"), status: status)
-        let outgoing = PlaygroundBookCommand.Outgoing.status(.init(step: stepInfo, progress: 0))
+    func notify<E: Swift.Error, A: CustomProgressDescription>(_ event: ProgressEvent<A>) -> IO<E, Void> {
+        guard let event = event as? ProgressEvent<PlaygroundBookEvent> else {
+            fatalError("received invalid event")
+        }
         
-        return webSocket.send(command: outgoing).ignoreError()
+        return webSocket.send(command: PlaygroundBookCommand.Outgoing.status(event.playgroundBookStatus))
+                        .ignoreError()
+                        .provide(self)
     }
 }
 
-extension Step: Equatable {
-    public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.partial == rhs.partial &&
-        lhs.total == rhs.total
-    }
-}
-
-extension EnvIO where A == Void {
+private extension EnvIO where A == Void {
     func ignoreError<E: Swift.Error, EE: Swift.Error>() -> EnvIO<D, EE, Void> where F == IOPartial<E> {
         handleError { _ in }^.mapError { e in e as! EE }
+    }
+}
+
+private extension nef.ProgressEvent where A == PlaygroundBookEvent {
+    var playgroundBookStatus: PlaygroundBookStatus {
+        .init(step: .init(information: step.progressDescription,
+                          status: status.stepStatus),
+              progress: step.progressPercentage)
+    }
+}
+
+private extension nef.PlaygroundBookEvent {
+    var progressPercentage: Double {
+        let cases: Double = 5
+        
+        switch self {
+        case .cleanup:
+            return (1/cases) * 100
+        case .creatingStructure:
+            return (2/cases) * 100
+        case .downloadingDependencies:
+            return (3/cases) * 100
+        case .gettingModules:
+            return (4/cases) * 100
+        case .buildingPlayground:
+            return (5/cases) * 100
+        }
+    }
+}
+
+private extension nef.ProgressEventStatus {
+    var stepStatus: PlaygroundBookStatus.Status {
+        switch self {
+        case .inProgress: return .running
+        case .successful: return .succesful
+        case .failed: return .failed
+        }
     }
 }
