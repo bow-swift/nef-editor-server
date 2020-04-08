@@ -3,7 +3,7 @@ import Foundation
 public struct PlaygroundBookEvent: Codable {
     public enum Status: String, Codable {
         case failed
-        case succesful
+        case successful
         case running
     }
     

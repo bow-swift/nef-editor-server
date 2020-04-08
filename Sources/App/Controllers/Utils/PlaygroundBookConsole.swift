@@ -34,7 +34,7 @@ private extension nef.ProgressEventStatus {
     var eventStatus: NefEditorData.PlaygroundBookEvent.Status {
         switch self {
         case .inProgress: return .running
-        case .successful: return .succesful
+        case .successful: return .successful
         case .failed: return .failed
         }
     }
