@@ -4,7 +4,7 @@ import Bow
 import BowEffects
 import NefEditorData
 
-final class PlaygroundBookConsole: nef.Console, HasWebSocketOutput, HasCommandEncoder {
+final class PlaygroundBookConsole: nef.ProgressReport, HasWebSocketOutput, HasCommandEncoder {
     let webSocket: WebSocketOutput
     let commandEncoder: RequestEncoder
     
@@ -13,39 +13,35 @@ final class PlaygroundBookConsole: nef.Console, HasWebSocketOutput, HasCommandEn
         self.commandEncoder = encoder
     }
     
-    func printStep<E: Swift.Error>(step: Step, information: String) -> IO<E, Void> {
-        update(step: step, information: [information], status: .running).provide(self)
-    }
-    
-    func printSubstep<E: Swift.Error>(step: Step, information: [String]) -> IO<E, Void> {
-        update(step: step, information: information, status: .running).provide(self)
-    }
-    
-    func printStatus<E: Swift.Error>(success: Bool) -> IO<E, Void> {
-        update(step: Step.empty, information: [], status: success ? .succesful : .failure).provide(self)
-    }
-    
-    func printStatus<E: Swift.Error>(information: String, success: Bool) -> IO<E, Void> {
-        update(step: Step.empty, information: [information], status: success ? .succesful : .failure).provide(self)
-    }
-    
-    // MARK: internal helpers
-    private func update<D: HasCommandEncoder, E: Swift.Error>(step: Step, information: [String], status: PlaygroundBookStatus.Status) -> EnvIO<D, E, Void> {
-        let stepInfo = PlaygroundBookStatus.Step(information: information.joined(separator: "\n"), status: status)
-        let outgoing = PlaygroundBookCommand.Outgoing.status(.init(step: stepInfo, progress: 0))
-        
-        return webSocket.send(command: outgoing).ignoreError()
+    func notify<E: Swift.Error, A: CustomProgressDescription>(_ event: ProgressEvent<A>) -> IO<E, Void> {
+        webSocket.send(command: PlaygroundBookCommand.Outgoing.event(event.playgroundBookEvent))
+                 .ignoreError()
+                 .provide(self)
     }
 }
 
-extension Step: Equatable {
-    public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.partial == rhs.partial &&
-        lhs.total == rhs.total
+// MARK: Helpers for extracting information from a PlaygroundBookEvent
+private extension nef.ProgressEvent {
+    var playgroundBookEvent: NefEditorData.PlaygroundBookEvent {
+        .init(information: step.progressDescription,
+              currentStep: step.currentStep,
+              totalSteps: step.totalSteps,
+              status: status.eventStatus)
     }
 }
 
-extension EnvIO where A == Void {
+private extension nef.ProgressEventStatus {
+    var eventStatus: NefEditorData.PlaygroundBookEvent.Status {
+        switch self {
+        case .inProgress: return .running
+        case .successful: return .successful
+        case .failed: return .failed
+        }
+    }
+}
+
+// MARK: helpers for ignoring the Error in EnvIO
+private extension EnvIO where A == Void {
     func ignoreError<E: Swift.Error, EE: Swift.Error>() -> EnvIO<D, EE, Void> where F == IOPartial<E> {
         handleError { _ in }^.mapError { e in e as! EE }
     }

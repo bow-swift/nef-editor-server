@@ -2,7 +2,7 @@ import Foundation
 
 public enum PlaygroundBookCommand {
     public enum Outgoing: Encodable {
-        case status(PlaygroundBookStatus)
+        case event(PlaygroundBookEvent)
         case playgroundBookGenerated(PlaygroundBookGenerated)
         case error(PlaygroundBookCommandError)
     }
@@ -18,7 +18,7 @@ public enum PlaygroundBookCommand {
 
 extension PlaygroundBookCommand.Outgoing {
     private enum CodingKeys: String, CodingKey {
-        case status
+        case event
         case playgroundBookGenerated
         case error
     }
@@ -27,8 +27,8 @@ extension PlaygroundBookCommand.Outgoing {
         var container = encoder.container(keyedBy: CodingKeys.self)
         
         switch self {
-        case .status(let status):
-            try container.encode(status, forKey: .status)
+        case .event(let event):
+            try container.encode(event, forKey: .event)
         case .playgroundBookGenerated(let playground):
             try container.encode(playground, forKey: .playgroundBookGenerated)
         case .error(let error):

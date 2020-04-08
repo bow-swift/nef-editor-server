@@ -1,27 +1,29 @@
 import Foundation
 
-public struct PlaygroundBookStatus: Codable {
+public struct PlaygroundBookEvent: Codable {
     public enum Status: String, Codable {
-        case failure
-        case succesful
+        case failed
+        case successful
         case running
     }
     
-    public struct Step: Codable {
-        public let information: String
-        public let status: PlaygroundBookStatus.Status
+    public struct Progress: Codable {
+        public let current: UInt
+        public let total: UInt
         
-        public init(information: String, status: PlaygroundBookStatus.Status) {
-            self.information = information
-            self.status = status
+        public init(current: UInt, total: UInt) {
+            self.current = current
+            self.total = total
         }
     }
     
-    public let step: Step
-    public let progress: Double
+    public let information: String
+    public let progress: PlaygroundBookEvent.Progress
+    public let status: Status
     
-    public init(step: Step, progress: Double) {
-        self.step = step
-        self.progress = progress
+    public init(information: String, currentStep: UInt, totalSteps: UInt, status: PlaygroundBookEvent.Status) {
+        self.information = information
+        self.progress = .init(current: currentStep, total: totalSteps)
+        self.status = status
     }
 }
