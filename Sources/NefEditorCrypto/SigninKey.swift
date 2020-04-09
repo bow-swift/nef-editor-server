@@ -27,7 +27,7 @@ extension Curve25519.Signing.PrivateKey {
     public func addSignature(to headers: HTTPHeaders) -> Result<HTTPHeaders, SignatureError> {
         signature(for: headers).map { signature in
             var httpHeaders = headers
-            httpHeaders[i18n.HTTPHeaders.signature] = String(data: signature, encoding: .utf8)
+            httpHeaders[i18n.HTTPHeaders.signature] = String(data: signature, encoding: .isoLatin1)
             return httpHeaders
         }
     }
@@ -35,7 +35,7 @@ extension Curve25519.Signing.PrivateKey {
     private func signature(for headers: HTTPHeaders) -> Result<Data, SignatureError> {
         headers.encode()
             .mapError(SignatureError.encoding)
-            .flatMap(signature)
+            .flatMap(signature(data:))
     }
     
     private func signature<D: DataProtocol>(data: D) -> Result<Data, SignatureError> {
@@ -50,7 +50,7 @@ extension Curve25519.Signing.PrivateKey {
 
 extension Curve25519.Signing.PublicKey {
     
-    func isValidSignature<D: DataProtocol>(_ signature: D, for headers: HTTPHeaders) -> Bool {
+    public func isValidSignature<D: DataProtocol>(_ signature: D, for headers: HTTPHeaders) -> Bool {
         guard case let .success(data) = headers.encode() else { return false }
         return isValidSignature(signature, for: data)
     }

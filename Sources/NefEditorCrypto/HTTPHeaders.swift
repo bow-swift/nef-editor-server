@@ -3,9 +3,9 @@ import Foundation
 public typealias HTTPHeaders = [String: Any]
 
 public extension HTTPHeaders {
-    var signatureValue: String {
-        guard let signature = self[i18n.HTTPHeaders.signature] as? String else { return "" }
-        return signature
+    var signatureValue: Data? {
+        guard let signature = self[i18n.HTTPHeaders.signature] as? String else { return nil }
+        return signature.data(using: .isoLatin1)
     }
 }
 
