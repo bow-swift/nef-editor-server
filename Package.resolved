@@ -2,11 +2,20 @@
   "object": {
     "pins": [
       {
+        "package": "Auth",
+        "repositoryURL": "https://github.com/vapor/auth.git",
+        "state": {
+          "branch": null,
+          "revision": "e6f61b403727ec124214beb3e57deff579f31d00",
+          "version": "2.0.4"
+        }
+      },
+      {
         "package": "Bow",
         "repositoryURL": "https://github.com/bow-swift/bow",
         "state": {
           "branch": "master",
-          "revision": "cb4ce69076120d29b9f259f4824279eefa2538a6",
+          "revision": "7abd8d952fb7912259ccc216c73264d8a8739541",
           "version": null
         }
       },
@@ -47,6 +56,24 @@
         }
       },
       {
+        "package": "Fluent",
+        "repositoryURL": "https://github.com/vapor/fluent.git",
+        "state": {
+          "branch": null,
+          "revision": "783819d8838d15e1a05b459aa0fd1bde1e37ac26",
+          "version": "3.2.1"
+        }
+      },
+      {
+        "package": "FluentSQLite",
+        "repositoryURL": "https://github.com/vapor/fluent-sqlite.git",
+        "state": {
+          "branch": null,
+          "revision": "c32f5bda84bf4ea691d19afe183d40044f579e11",
+          "version": "3.0.0"
+        }
+      },
+      {
         "package": "HTTP",
         "repositoryURL": "https://github.com/vapor/http.git",
         "state": {
@@ -68,8 +95,8 @@
         "package": "nef",
         "repositoryURL": "https://github.com/bow-swift/nef.git",
         "state": {
-          "branch": "develop",
-          "revision": "f19b8a105f958890968a04d6afa426081ffa0ee2",
+          "branch": null,
+          "revision": "c981b63840c42f472f53ac074bca76f5066e8ee8",
           "version": null
         }
       },
@@ -98,6 +125,24 @@
           "branch": null,
           "revision": "fa5b5de62bd68bcde9a69933f31319e46c7275fb",
           "version": "1.0.2"
+        }
+      },
+      {
+        "package": "SQL",
+        "repositoryURL": "https://github.com/vapor/sql.git",
+        "state": {
+          "branch": null,
+          "revision": "50eaeb8f52a1ce63f1ff3880e1114dd8757a78a6",
+          "version": "2.3.2"
+        }
+      },
+      {
+        "package": "SQLite",
+        "repositoryURL": "https://github.com/vapor/sqlite.git",
+        "state": {
+          "branch": null,
+          "revision": "314d9cd21165bcf14215e336a23ff8214f40e411",
+          "version": "3.2.1"
         }
       },
       {
