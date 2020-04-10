@@ -1,5 +1,5 @@
-import NefEditorCrypto
-import CryptoKit
+@testable import NefEditorCrypto
+import Crypto
 import SwiftCheck
 import XCTest
 

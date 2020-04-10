@@ -12,21 +12,31 @@ let package = Package(
         .library(name: "NefEditorCrypto", targets: ["NefEditorCrypto"]),
     ],
     dependencies: [
-        .package(name: "Vapor", url: "https://github.com/vapor/vapor.git", from: "3.0.0"),
-        .package(name: "Auth", url: "https://github.com/vapor/auth.git", from: "2.0.0"),
-        .package(name: "nef", url: "https://github.com/bow-swift/nef.git", .revision("c981b63840c42f472f53ac074bca76f5066e8ee8")),
-        .package(name: "SwiftCheck", url: "https://github.com/typelift/SwiftCheck.git", from: "0.8.1")
+        .package(url: "https://github.com/vapor/vapor.git", from: "4.0.0"),
+        .package(url: "https://github.com/bow-swift/nef.git", .revision("c981b63840c42f472f53ac074bca76f5066e8ee8")),
+        .package(url: "https://github.com/typelift/SwiftCheck.git", from: "0.8.1"),
     ],
     targets: [
         .target(name: "NefEditorData"),
-        .target(name: "NefEditorCrypto", dependencies: [.product(name: "Authentication", package: "Auth")]),
-        .target(name: "App", dependencies: ["NefEditorData",
-                                            "NefEditorCrypto",
-                                            "Vapor",
-                                            "nef",
-                                            .product(name: "Authentication", package: "Auth")]),
+        .target(name: "NefEditorCrypto", dependencies: [
+            .product(name: "Vapor", package: "vapor"),
+        ]),
+        .target(name: "App", dependencies: [
+            .target(name: "NefEditorData"),
+            .target(name: "NefEditorCrypto"),
+            .product(name: "Vapor", package: "vapor"),
+            .product(name: "nef", package: "nef"),
+        ]),
         .target(name: "Run", dependencies: ["App"]),
-        .testTarget(name: "AppTests", dependencies: ["App"]),
-        .testTarget(name: "NefEditorCryptoTests", dependencies: ["NefEditorCrypto", "SwiftCheck"])
+
+        .testTarget(name: "AppTests", dependencies: [
+            .target(name: "App"),
+            .product(name: "XCTVapor", package: "vapor"),
+        ]),
+        .testTarget(name: "NefEditorCryptoTests", dependencies: [
+            .target(name: "NefEditorCrypto"),
+            .product(name: "XCTVapor", package: "vapor"),
+            .product(name: "SwiftCheck", package: "SwiftCheck"),
+        ])
     ]
 )

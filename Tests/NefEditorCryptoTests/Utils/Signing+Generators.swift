@@ -1,7 +1,7 @@
 import Foundation
 import NefEditorCrypto
 import SwiftCheck
-import CryptoKit
+import Vapor
 
 
 extension Curve25519.Signing.PrivateKey: Arbitrary {

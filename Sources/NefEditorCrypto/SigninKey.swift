@@ -1,5 +1,5 @@
 import Foundation
-import CryptoKit
+import Vapor
 
 public protocol SigningKey {
     var rawRepresentation: Data { get }
