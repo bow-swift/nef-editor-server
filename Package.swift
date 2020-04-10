@@ -9,6 +9,7 @@ let package = Package(
     products: [
         .library(name: "nef-editor-server", targets: ["App"]),
         .library(name: "NefEditorData", targets: ["NefEditorData"]),
+        .library(name: "NefEditorCrypto", targets: ["NefEditorCrypto"]),
     ],
     dependencies: [
         .package(name: "Vapor", url: "https://github.com/vapor/vapor.git", from: "3.0.0"),
