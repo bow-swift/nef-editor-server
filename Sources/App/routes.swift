@@ -1,21 +1,14 @@
 import Vapor
 
-public func routes(_ app: Application) throws {
-    app.webSocket("playgroundBook", onUpgrade: playgroundBookController().handler)
-}
-
-private func playgroundBookController() -> PlaygroundBookController {
-    PlaygroundBookController(playgroundBook: PlaygroundBookServer(),
-                             config: config)
-}
-
-private func config(webSocket: WebSocketOutput) -> PlaygroundBookConfig {
-    let output = URL(fileURLWithPath: NSTemporaryDirectory())
-    let encoder = JSONEncoder()
-    let decoder = JSONDecoder()
+struct RouteRegister {
+    let app: Application
     
-    return PlaygroundBookConfig(outputDirectory: output,
-                                encoder: encoder,
-                                decoder: decoder,
-                                webSocket: webSocket)
+    func playgroundBook(config: @escaping (WebSocketOutput) -> PlaygroundBookConfig) {
+        let controller = PlaygroundBookController(playgroundBook: PlaygroundBookServer(), config: config)
+        app.webSocket("playgroundBook", onUpgrade: controller.handler)
+    }
+    
+    func appleSignIn() {
+        app.get("signin", use: AppleSignInController(apple: AppleSignInServer()).handle)
+    }
 }
