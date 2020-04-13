@@ -9,7 +9,7 @@ final class PlaygroundBookController {
         self.config = config
     }
     
-    func handler(webSocket: WebSocket, request: Request) throws {
+    func handler(request: Request, webSocket: WebSocket) {
         let queue: DispatchQueue = .init(label: String(describing: PlaygroundBookController.self), qos: .userInitiated)
         
         webSocket.onText { socket, text in

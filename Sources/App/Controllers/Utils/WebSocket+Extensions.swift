@@ -13,7 +13,7 @@ extension WebSocket: WebSocketOutput {
                 return
             }
             
-            let promise: Promise<Void> = self.eventLoop.newPromise()
+            let promise = self.eventLoop.makePromise(of: Void.self)
             promise.futureResult.whenFailure { error in
                 callback(.left(WebSocketError.sending(error: error)))
             }
@@ -21,7 +21,7 @@ extension WebSocket: WebSocketOutput {
                 callback(.right(()))
             }
             
-            self.send(text: message, promise: promise)
+            self.send(message, promise: promise)
         }^
     }
 }
