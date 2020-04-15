@@ -31,7 +31,7 @@ final class AppleSignInClient: SignInClient {
     
     private func getAppleKeys() -> EnvIO<API.Config, AppleSignInError, JWKSet> {
         AppleSignIn.API.default.getKeys()
-            .mapError { e in AppleSignInError.request(e) }
+            .mapError { e in AppleSignInError.jwt(e) }
     }
     
     private func decode(identityToken: String, jwks: JWKSet) -> EnvIO<API.Config, AppleSignInError, AppleJWT> {
@@ -46,13 +46,18 @@ final class AppleSignInClient: SignInClient {
     }
     
     private func verify(appleJWT: AppleJWT, request: AppleSignInRequest) -> EnvIO<API.Config, AppleSignInError, Void> {
-        guard appleJWT.issuer == "https://appleid.apple.com",
-              appleJWT.subject == request.user,
-              appleJWT.expires > Date() else {
-            return EnvIO.raiseError(AppleSignInError.jwtVerification)^
+        guard appleJWT.issuer == "https://appleid.apple.com" else {
+            return EnvIO.raiseError(AppleSignInError.jwtVerification(info: "invalid issuer"))^
+        }
+        
+        guard appleJWT.subject == request.user else {
+            return EnvIO.raiseError(AppleSignInError.jwtVerification(info: "invalid user ID"))^
+        }
+        
+        guard appleJWT.expires > Date() else {
+            return EnvIO.raiseError(AppleSignInError.jwtVerification(info: "expiration date"))^
         }
         
         return EnvIO.pure(())^
     }
-
 }

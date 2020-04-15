@@ -2,6 +2,11 @@ import Foundation
 import JWTKit
 import AppleSignIn
 
+struct AppleSigner {
+    let kid: JWKIdentifier
+    let signer: JWTSigner
+}
+
 extension JWKKey {
     var appleSigner: AppleSigner? {
         guard let rsaKey = RSAKey(modulus: n, exponent: e, privateExponent: nil) else {
@@ -21,11 +26,6 @@ extension JWKKey {
             return nil
         }
     }
-}
-
-struct AppleSigner {
-    let kid: JWKIdentifier
-    let signer: JWTSigner
 }
 
 extension Array where Element == AppleSigner {
