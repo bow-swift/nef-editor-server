@@ -7,7 +7,6 @@ let package = Package(
         .macOS(.v10_15),
     ],
     products: [
-        .library(name: "nef-editor-server", targets: ["App"]),
         .library(name: "NefEditorData", targets: ["NefEditorData"]),
     ],
     dependencies: [

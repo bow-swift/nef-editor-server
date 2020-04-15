@@ -20,7 +20,7 @@ extension AppleSignInError: CustomStringConvertible {
             if let e = e {
                 return "\(e)"
             } else {
-                return "the encode operation could not be completed"
+                return "The encode operation could not be completed"
             }
         case .jwt(let e):
             return "Could not validate JWT: \(e)"

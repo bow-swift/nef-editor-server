@@ -1,9 +1,7 @@
-import Vapor
+import Foundation
 import nef
 import Bow
 import BowEffects
-
-import NefEditorData
 import AppleSignIn
 
 
@@ -46,7 +44,7 @@ final class AppleSignInClient: SignInClient {
     }
     
     private func verify(appleJWT: AppleJWT, request: AppleSignInRequest) -> EnvIO<API.Config, AppleSignInError, Void> {
-        guard appleJWT.issuer == "https://appleid.apple.com" else {
+        guard appleJWT.issuer == Constants.appleIssuer else {
             return EnvIO.raiseError(AppleSignInError.jwtVerification(info: "invalid issuer"))^
         }
         
@@ -54,10 +52,20 @@ final class AppleSignInClient: SignInClient {
             return EnvIO.raiseError(AppleSignInError.jwtVerification(info: "invalid user ID"))^
         }
         
+        guard appleJWT.audience == Constants.clientBundleId else {
+            return EnvIO.raiseError(AppleSignInError.jwtVerification(info: "invalid audience"))^
+        }
+        
         guard appleJWT.expires > Date() else {
             return EnvIO.raiseError(AppleSignInError.jwtVerification(info: "expiration date"))^
         }
         
         return EnvIO.pure(())^
+    }
+    
+    // MARK: - Constants
+    enum Constants {
+        static let appleIssuer = "https://appleid.apple.com"
+        static let clientBundleId = "com.47deg.SignInAppleTest"
     }
 }

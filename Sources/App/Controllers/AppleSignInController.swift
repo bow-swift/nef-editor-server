@@ -1,7 +1,6 @@
 import Vapor
 import Bow
 import BowEffects
-import NefEditorData
 import AppleSignIn
 
 final class AppleSignInController {
