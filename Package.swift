@@ -13,13 +13,13 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/vapor/vapor.git", from: "4.0.0"),
         .package(url: "https://github.com/bow-swift/nef.git", .branch("develop")),
+        .package(path: "./Sources/Clients/AppleSignIn"),
     ],
     targets: [
         .target(name: "NefEditorData"),
-        .target(name: "AppleSignIn", path: "Sources/Clients/AppleSignIn"),
         .target(name: "App", dependencies: [
             .target(name: "NefEditorData"),
-            .target(name: "AppleSignIn"),
+            .product(name: "AppleSignIn", package: "AppleSignIn"),
             .product(name: "Vapor", package: "vapor"),
             .product(name: "nef", package: "nef"),
         ]),

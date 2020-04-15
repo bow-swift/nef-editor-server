@@ -9,6 +9,6 @@ struct RouteRegister {
     }
     
     func appleSignIn() {
-        app.get("signin", use: AppleSignInController(apple: AppleSignInServer()).handle)
+        app.get("signin", use: AppleSignInController(client: AppleSignInClient()).handle)
     }
 }

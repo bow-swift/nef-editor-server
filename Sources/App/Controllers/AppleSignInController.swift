@@ -2,26 +2,27 @@ import Vapor
 import Bow
 import BowEffects
 import NefEditorData
+import AppleSignIn
 
 final class AppleSignInController {
-    let apple: AppleSignIn
+    let client: SignInClient
     let encoder: RequestEncoder
     
-    init(apple: AppleSignIn, encoder: RequestEncoder = JSONEncoder()) {
-        self.apple = apple
+    init(client: SignInClient, encoder: RequestEncoder = JSONEncoder()) {
+        self.client = client
         self.encoder = encoder
     }
     
     func handle(request: Request) throws -> String {
         let queue: DispatchQueue = .init(label: String(describing: AppleSignInController.self), qos: .userInitiated)
         
-        return try apple.signIn()
+        return try client.signIn()
             .flatMap(encode(response:))^
-            .provide(request)
+            .provide(API.Config(basePath: "https://appleid.apple.com"))
             .unsafeRunSync(on: queue)
     }
     
-    private func encode(response: AppleSignInResponse) -> EnvIO<Request, AppleSignInError, String> {
+    private func encode(response: AppleSignInResponse) -> EnvIO<API.Config, AppleSignInError, String> {
         encoder.safeEncode(response)^
             .mapError { e in .response(e) }^
             .flatMap { data in

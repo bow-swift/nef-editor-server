@@ -20,15 +20,6 @@
         }
       },
       {
-        "package": "Bow",
-        "repositoryURL": "https://github.com/bow-swift/bow",
-        "state": {
-          "branch": "master",
-          "revision": "7abd8d952fb7912259ccc216c73264d8a8739541",
-          "version": null
-        }
-      },
-      {
         "package": "console-kit",
         "repositoryURL": "https://github.com/vapor/console-kit.git",
         "state": {
