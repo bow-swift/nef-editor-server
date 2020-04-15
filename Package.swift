@@ -16,10 +16,10 @@ let package = Package(
     ],
     targets: [
         .target(name: "NefEditorData"),
-        .target(name: "Clients"),
+        .target(name: "AppleSignIn", path: "Sources/Clients/AppleSignIn"),
         .target(name: "App", dependencies: [
             .target(name: "NefEditorData"),
-            .target(name: "Clients"),
+            .target(name: "AppleSignIn"),
             .product(name: "Vapor", package: "vapor"),
             .product(name: "nef", package: "nef"),
         ]),
