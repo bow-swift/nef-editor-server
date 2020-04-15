@@ -6,9 +6,9 @@ import NefEditorData
 
 final class PlaygroundBookConsole: nef.ProgressReport, HasWebSocketOutput, HasCommandEncoder {
     let webSocket: WebSocketOutput
-    let commandEncoder: RequestEncoder
+    let commandEncoder: Encoder
     
-    init(webSocket: WebSocketOutput, encoder: RequestEncoder) {
+    init(webSocket: WebSocketOutput, encoder: Encoder) {
         self.webSocket = webSocket
         self.commandEncoder = encoder
     }

@@ -4,11 +4,11 @@ import BowEffects
 typealias HasCommandCodable = HasCommandEncoder & HasCommandDecoder
 
 protocol HasCommandEncoder {
-    var commandEncoder: RequestEncoder { get }
+    var commandEncoder: Encoder { get }
 }
 
 protocol HasCommandDecoder {
-    var commandDecoder: ResponseDecoder { get }
+    var commandDecoder: Decoder { get }
 }
 
 /// Encoder
@@ -17,7 +17,7 @@ enum EncodingError: Error {
     case other(Error)
 }
 
-protocol RequestEncoder {
+protocol Encoder {
     func safeEncode<D, T: Encodable>(_ value: T) -> EnvIO<D, EncodingError, Data>
 }
 
@@ -28,6 +28,6 @@ public enum DecodingError: Error {
     case other(Error)
 }
 
-public protocol ResponseDecoder {
+public protocol Decoder {
     func safeDecode<D, T: Decodable>(_ type: T.Type, from: Data) -> EnvIO<D, DecodingError, T>
 }

@@ -1,14 +1,20 @@
 import Vapor
+import AppleSignIn
 
 struct RouteRegister {
     let app: Application
     
     func playgroundBook(config: @escaping (WebSocketOutput) -> PlaygroundBookConfig) {
-        let controller = PlaygroundBookController(playgroundBook: PlaygroundBookServer(), config: config)
+        let controller = PlaygroundBookController(playgroundBook: PlaygroundBookServer(),
+                                                  config: config)
+        
         app.webSocket("playgroundBook", onUpgrade: controller.handler)
     }
     
     func appleSignIn() {
-        app.get("signin", use: AppleSignInController(client: AppleSignInClient()).handle)
+        let controller = AppleSignInController(client: AppleSignInClient(),
+                                               apiConfig: API.Config(basePath: "https://appleid.apple.com"))
+        
+        app.post("signin", use: controller.handle)
     }
 }
