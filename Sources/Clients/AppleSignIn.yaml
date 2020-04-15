@@ -7,18 +7,19 @@ paths:
   /auth/keys:
     get:
       operationId: getKeys
+      summary: Fetch Apple’s public key to verify the ID token signature.
       responses:
-        '204':
-          description: Fetch Apple’s public key to verify the ID token signature.
+        '200':
+          description: The request was successful.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AppleKeys'
+                $ref: '#/components/schemas/JWKSet'
 
 components:
   schemas:
-    
-    AppleKeys:
+
+    JWKSet:
       type: object
       required:
         - keys
@@ -26,9 +27,9 @@ components:
         keys:
           type: array
           items:
-             $ref: '#/components/schemas/AppleKey'
+             $ref: '#/components/schemas/JWKKey'
 
-    AppleKey:
+    JWKKey:
       type: object
       required:
         - kty
