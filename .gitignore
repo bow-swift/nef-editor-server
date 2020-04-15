@@ -27,3 +27,4 @@ Package.resolved
 *.xcodeproj
 .swiftpm
 .build
+Clients/AppleSignIn
