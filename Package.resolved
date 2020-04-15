@@ -29,6 +29,15 @@
         }
       },
       {
+        "package": "jwt-kit",
+        "repositoryURL": "https://github.com/vapor/jwt-kit",
+        "state": {
+          "branch": null,
+          "revision": "c4111580bbf37aefd5182a93ecb2906a216199b3",
+          "version": "4.0.0-rc.1.3"
+        }
+      },
+      {
         "package": "nef",
         "repositoryURL": "https://github.com/bow-swift/nef.git",
         "state": {
