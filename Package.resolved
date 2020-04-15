@@ -41,8 +41,8 @@
         "package": "nef",
         "repositoryURL": "https://github.com/bow-swift/nef.git",
         "state": {
-          "branch": null,
-          "revision": "c981b63840c42f472f53ac074bca76f5066e8ee8",
+          "branch": "develop",
+          "revision": "f21daf611f9b19ce48faf328e21a12e35694e70d",
           "version": null
         }
       },
@@ -159,8 +159,8 @@
         "repositoryURL": "https://github.com/vapor/vapor.git",
         "state": {
           "branch": null,
-          "revision": "089361cf633080028c2f15d58e0fd6e48c64f323",
-          "version": "4.0.1"
+          "revision": "d00c85ded785b7c9a68045a4d2a4676625afeb97",
+          "version": "4.1.0"
         }
       },
       {
