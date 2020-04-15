@@ -1,11 +1,21 @@
 import Foundation
 
-struct AppleSignInRequest: Codable {
-    let user: String
-    let identityToken: String
-    let authorizationCode: String
+public struct AppleSignInRequest: Codable {
+    public let user: String
+    public let identityToken: String
+    public let authorizationCode: String
+    
+    public init(user: String, identityToken: String, authorizationCode: String) {
+        self.user = user
+        self.identityToken = identityToken
+        self.authorizationCode = authorizationCode
+    }
 }
 
-struct AppleSignInResponse: Codable {
-    let token: String
+public struct AppleSignInResponse: Codable {
+    public let token: String
+    
+    public init(token: String) {
+        self.token = token
+    }
 }

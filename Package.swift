@@ -12,12 +12,14 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/vapor/vapor.git", from: "4.0.0"),
-        .package(url: "https://github.com/bow-swift/nef.git", .revision("c981b63840c42f472f53ac074bca76f5066e8ee8")),
+        .package(url: "https://github.com/bow-swift/nef.git", .branch("develop")),
     ],
     targets: [
         .target(name: "NefEditorData"),
+        .target(name: "Clients"),
         .target(name: "App", dependencies: [
             .target(name: "NefEditorData"),
+            .target(name: "Clients"),
             .product(name: "Vapor", package: "vapor"),
             .product(name: "nef", package: "nef"),
         ]),

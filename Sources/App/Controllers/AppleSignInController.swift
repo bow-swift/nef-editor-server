@@ -1,6 +1,7 @@
 import Vapor
 import Bow
 import BowEffects
+import NefEditorData
 
 final class AppleSignInController {
     let apple: AppleSignIn
@@ -14,8 +15,8 @@ final class AppleSignInController {
     func handle(request: Request) throws -> String {
         let queue: DispatchQueue = .init(label: String(describing: AppleSignInController.self), qos: .userInitiated)
         
-        return try self.apple.signIn()
-            .flatMap(self.encode(response:))^
+        return try apple.signIn()
+            .flatMap(encode(response:))^
             .provide(request)
             .unsafeRunSync(on: queue)
     }
