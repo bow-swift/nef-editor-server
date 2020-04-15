@@ -14,9 +14,11 @@ final class AppleSignInClient: SignInClient {
         
         return binding(
             appleJWT <- self.decode(identityToken: request.identityToken),
+                     |<-self.verify(appleJWT: appleJWT.get, request: request),
         yield: AppleSignInResponse(token: "dummy response"))^
     }
     
+    // MARK: - JWT
     private func decode(identityToken jwt: String) -> EnvIO<API.Config, AppleSignInError, AppleJWT> {
         let jwks = EnvIO<API.Config, AppleSignInError, JWKSet>.var()
         let appleJWT = EnvIO<API.Config, AppleSignInError, AppleJWT>.var()
@@ -42,4 +44,15 @@ final class AppleSignInClient: SignInClient {
             return EnvIO.raiseError(AppleSignInError.jwt(error))^
         }
     }
+    
+    private func verify(appleJWT: AppleJWT, request: AppleSignInRequest) -> EnvIO<API.Config, AppleSignInError, Void> {
+        guard appleJWT.issuer == "https://appleid.apple.com",
+              appleJWT.subject == request.user,
+              appleJWT.expires > Date() else {
+            return EnvIO.raiseError(AppleSignInError.jwtVerification)^
+        }
+        
+        return EnvIO.pure(())^
+    }
+
 }
