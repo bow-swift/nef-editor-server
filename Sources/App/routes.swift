@@ -1,10 +1,13 @@
 import Vapor
 
-public func routes(_ wss: NIOWebSocketServer) throws {
-    wss.get("playground", use: PlaygroundBookController(playgroundBook: PlaygroundBookServer(),
-                                                        config: config).handler)
+public func routes(_ app: Application) throws {
+    app.webSocket("playgroundBook", onUpgrade: playgroundBookController().handler)
 }
 
+private func playgroundBookController() -> PlaygroundBookController {
+    PlaygroundBookController(playgroundBook: PlaygroundBookServer(),
+                             config: config)
+}
 
 private func config(webSocket: WebSocketOutput) -> PlaygroundBookConfig {
     let output = URL(fileURLWithPath: NSTemporaryDirectory())
