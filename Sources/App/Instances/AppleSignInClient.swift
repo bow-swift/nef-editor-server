@@ -9,12 +9,13 @@ final class AppleSignInClient: SignInClient {
     
     func signIn(_ request: AppleSignInRequest) -> EnvIO<API.Config, AppleSignInError, AppleSignInResponse> {
         let appleJWT = EnvIO<API.Config, AppleSignInError, AppleJWT>.var()
+        let token = EnvIO<API.Config, AppleSignInError, AppleSignInResponse>.var()
         
         return binding(
             appleJWT <- self.decode(identityToken: request.identityToken),
                      |<-self.verify(appleJWT: appleJWT.get, request: request),
-        yield: AppleSignInResponse(token: "dummy response"))^
-        #warning("WIP: we will response with a token to use for authenticate services")
+               token <- self.generateAppleToken(appleJWT: appleJWT.get),
+        yield: token.get)^
     }
     
     // MARK: - JWT
@@ -58,6 +59,11 @@ final class AppleSignInClient: SignInClient {
         }
         
         return EnvIO.pure(())^
+    }
+    
+    // MARK: - Generate and validate tokens with Apple
+    private func generateAppleToken(appleJWT: AppleJWT) -> EnvIO<API.Config, AppleSignInError, AppleSignInResponse> {
+        fatalError()
     }
     
     // MARK: - Constants
