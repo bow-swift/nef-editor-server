@@ -4,17 +4,23 @@ import Bow
 import BowEffects
 import AppleSignIn
 
-
 final class AppleSignInClient: SignInClient {
+    private let decoder: Decoder
+    
+    init(decoder: Decoder) {
+        self.decoder = decoder
+    }
     
     func signIn(_ request: AppleSignInRequest) -> EnvIO<API.Config, AppleSignInError, AppleSignInResponse> {
         let appleJWT = EnvIO<API.Config, AppleSignInError, AppleJWT>.var()
+        let secret = EnvIO<API.Config, AppleSignInError, String>.var()
         let token = EnvIO<API.Config, AppleSignInError, AppleSignInResponse>.var()
         
         return binding(
-            appleJWT <- self.decode(identityToken: request.identityToken),
-                     |<-self.verify(appleJWT: appleJWT.get, request: request),
-               token <- self.generateAppleToken(appleJWT: appleJWT.get),
+          appleJWT <- self.decode(identityToken: request.identityToken),
+                   |<-self.verify(appleJWT: appleJWT.get, request: request),
+            secret <- self.clientSecret(appleJWT: appleJWT.get),
+             token <- self.generateAppleToken(clientId: appleJWT.get.audience, clientSecret: secret.get, code: request.authorizationCode),
         yield: token.get)^
     }
     
@@ -42,7 +48,7 @@ final class AppleSignInClient: SignInClient {
     }
     
     private func verify(appleJWT: AppleJWT, request: AppleSignInRequest) -> EnvIO<API.Config, AppleSignInError, Void> {
-        guard appleJWT.issuer == Constants.appleIssuer else {
+        guard appleJWT.issuer == SignIn.appleIssuer else {
             return EnvIO.raiseError(.jwt(.invalidIssuer))^
         }
         
@@ -50,7 +56,7 @@ final class AppleSignInClient: SignInClient {
             return EnvIO.raiseError(.jwt(.invalidUserID))^
         }
         
-        guard appleJWT.audience == Constants.clientBundleId else {
+        guard appleJWT.audience == SignIn.clientId else {
             return EnvIO.raiseError(.jwt(.invalidClientID))^
         }
         
@@ -62,14 +68,37 @@ final class AppleSignInClient: SignInClient {
     }
     
     // MARK: - Generate and validate tokens with Apple
-    private func generateAppleToken(appleJWT: AppleJWT) -> EnvIO<API.Config, AppleSignInError, AppleSignInResponse> {
+    private func clientSecret(appleJWT: AppleJWT) -> EnvIO<API.Config, AppleSignInError, String> {
         fatalError()
     }
     
+    private func generateAppleToken(clientId: String, clientSecret: String, code: String) -> EnvIO<API.Config, AppleSignInError, AppleSignInResponse> {
+        let getToken = AppleSignIn.API.default.token(clientId: clientId,
+                                                     clientSecret: clientSecret,
+                                                     grantType: .authorizationCode,
+                                                     code: code,
+                                                     redirectUri: SignIn.redirectURI)
+
+        return getToken
+            .map(\.idToken)
+            .map(AppleSignInResponse.init)^
+            .flatMapError { httpError in
+                guard let data = httpError.dataError?.data else {
+                    return EnvIO.raiseError(.signIn(info: "\(httpError.error)"))^
+                }
+                
+                return self.decoder.safeDecode(AppleSignIn.AppleSignInError.self, from: data)
+                    .mapError { error in .signIn(info: "\(error)") }^
+                    .flatMap  { response in EnvIO.raiseError(.signIn(info: "\(response)"))^ }^
+            }
+    }
+    
     // MARK: - Constants
-    #warning("TODO: when we will create an identifier/servicesId/keys in the WWDC portal we will fill with real data")
-    enum Constants {
+    enum SignIn {
         static let appleIssuer = "https://appleid.apple.com"
-        static let clientBundleId = "com.47deg.SignInAppleTest"
+        static let teamId = "PKCNK63FZQ"
+        static let keyId = "J9CD6BW6MF"
+        static let clientId = "com.47deg.SignInAppleTest"
+        static let redirectURI = "https://signin.etsiit.es/redirect"
     }
 }

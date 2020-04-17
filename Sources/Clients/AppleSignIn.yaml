@@ -19,7 +19,7 @@ paths:
   /auth/token:
     post:
       operationId: token
-      summary: Validate the authorization grant code with Apple to obtain tokens or validate an existing refresh token.
+      summary: Validate the authorization grant code with Apple to obtain tokens.
       requestBody:
         required: true
         content:
@@ -90,6 +90,8 @@ components:
         - client_id
         - client_secret
         - grant_type
+        - code
+        - redirect_uri
       properties:
         client_id:
           type: string
@@ -109,9 +111,6 @@ components:
         redirect_uri:
           type: string
           description: The destination URI the code was originally sent to. It must include a domain name, and can’t be an IP address or localhost.
-        refresh_token:
-          type: string
-          description: The refresh token received during the authorization request.
 
     AppleSignInTokenResponse:
       type: object
