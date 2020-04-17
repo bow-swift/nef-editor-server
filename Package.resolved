@@ -33,8 +33,8 @@
         "repositoryURL": "https://github.com/vapor/jwt-kit",
         "state": {
           "branch": null,
-          "revision": "c4111580bbf37aefd5182a93ecb2906a216199b3",
-          "version": "4.0.0-rc.1.3"
+          "revision": "b5aa3d4eb91b54d0bd31a1a0c238199f2bf65969",
+          "version": "4.0.0-rc.1.4"
         }
       },
       {
@@ -51,8 +51,8 @@
         "repositoryURL": "https://github.com/vapor/routing-kit.git",
         "state": {
           "branch": null,
-          "revision": "35da702471cbcc308f58d38aa8fea971fa3fb166",
-          "version": "4.0.0"
+          "revision": "ee590c42d0b74fb6644c5ec128a2edc86c2858ff",
+          "version": "4.0.1"
         }
       },
       {
@@ -159,8 +159,8 @@
         "repositoryURL": "https://github.com/vapor/vapor.git",
         "state": {
           "branch": null,
-          "revision": "d00c85ded785b7c9a68045a4d2a4676625afeb97",
-          "version": "4.1.0"
+          "revision": "0aad60e61dffcd3f2131953f138235584a01c6f5",
+          "version": "4.2.1"
         }
       },
       {

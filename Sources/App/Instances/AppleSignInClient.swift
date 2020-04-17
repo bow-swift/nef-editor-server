@@ -14,6 +14,7 @@ final class AppleSignInClient: SignInClient {
             appleJWT <- self.decode(identityToken: request.identityToken),
                      |<-self.verify(appleJWT: appleJWT.get, request: request),
         yield: AppleSignInResponse(token: "dummy response"))^
+        #warning("WIP: we will response with a token to use for authenticate services")
     }
     
     // MARK: - JWT
@@ -29,41 +30,38 @@ final class AppleSignInClient: SignInClient {
     
     private func getAppleKeys() -> EnvIO<API.Config, AppleSignInError, JWKSet> {
         AppleSignIn.API.default.getKeys()
-            .mapError { e in AppleSignInError.jwt(e) }
+            .mapError { e in AppleSignInError.appleKeysNotFound }
     }
     
     private func decode(identityToken: String, jwks: JWKSet) -> EnvIO<API.Config, AppleSignInError, AppleJWT> {
-        let signers = jwks.keys.compactMap { key in key.appleSigner }
-        
-        do {
-            let appleJWT = try signers.decode(jwt: identityToken)
-            return EnvIO.pure(appleJWT)^
-        } catch {
-            return EnvIO.raiseError(AppleSignInError.jwt(error))^
-        }
+        EnvIO.invokeResult { _ in
+            let signers = jwks.keys.compactMap { key in key.appleSigner }
+            return signers.decode(jwt: identityToken)
+        }^
     }
     
     private func verify(appleJWT: AppleJWT, request: AppleSignInRequest) -> EnvIO<API.Config, AppleSignInError, Void> {
         guard appleJWT.issuer == Constants.appleIssuer else {
-            return EnvIO.raiseError(AppleSignInError.jwtVerification(info: "invalid issuer"))^
+            return EnvIO.raiseError(.jwt(.invalidIssuer))^
         }
         
         guard appleJWT.subject == request.user else {
-            return EnvIO.raiseError(AppleSignInError.jwtVerification(info: "invalid user ID"))^
+            return EnvIO.raiseError(.jwt(.invalidUserID))^
         }
         
         guard appleJWT.audience == Constants.clientBundleId else {
-            return EnvIO.raiseError(AppleSignInError.jwtVerification(info: "invalid audience"))^
+            return EnvIO.raiseError(.jwt(.invalidClientID))^
         }
         
         guard appleJWT.expires > Date() else {
-            return EnvIO.raiseError(AppleSignInError.jwtVerification(info: "expiration date"))^
+            return EnvIO.raiseError(.jwt(.expiredJWT))^
         }
         
         return EnvIO.pure(())^
     }
     
     // MARK: - Constants
+    #warning("TODO: when we will create an identifier/servicesId/keys in the WWDC portal we will fill with real data")
     enum Constants {
         static let appleIssuer = "https://appleid.apple.com"
         static let clientBundleId = "com.47deg.SignInAppleTest"

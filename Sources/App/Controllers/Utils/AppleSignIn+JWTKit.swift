@@ -29,8 +29,10 @@ extension JWKKey {
 }
 
 extension Array where Element == AppleSigner {
-    func decode(jwt: String) throws -> AppleJWT {
-        try jwtSigners.verify(jwt, as: AppleJWT.self)
+    func decode(jwt: String) -> Result<AppleJWT, AppleSignInError> {
+        Result {
+            try jwtSigners.verify(jwt, as: AppleJWT.self)
+        }.mapError { e in AppleSignInError.jwt(.decrypt(e)) }
     }
     
     private var jwtSigners: JWTSigners {
