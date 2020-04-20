@@ -44,23 +44,15 @@ final class AppleSignInController {
         EnvIO.accessM { env in
             env.responseEncoder.safeEncode(response)^
                 .mapError { e in .encodingResponse(e) }^
-                .flatMap(self.encodeResponse)^
-        }^
-    }
-    
-    private func encodeResponse(_ response: Data) -> EnvIO<AppleSignInConfig, AppleSignInError, String> {
-        EnvIO.accessM { env in
-            env.responseEncoder.safeEncode(response)
-                .mapError { e in .encodingResponse(e) }^
                 .flatMap { encoded in
                     EnvIO.invoke { _ in
-                        guard let string = String(data: response, encoding: .utf8) else {
+                        guard let string = String(data: encoded, encoding: .utf8) else {
                             throw AppleSignInError.invalidUTF8Encoding
                         }
                         
                         return string
                     }^
                 }^
-        }
+        }^
     }
 }
