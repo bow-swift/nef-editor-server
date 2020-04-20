@@ -15,7 +15,7 @@ final class AppleSignInClient: SignInClient {
         
         return binding(
              applePayload <- self.getPayload(identityToken: request.identityToken),
-          verifiedPayload <- self.verify(payload: applePayload.get, request: request),
+          verifiedPayload <- self.verify(payload: applePayload.get),
                 secretJWT <- self.clientSecret(teamId: SignIn.teamId, clientId: verifiedPayload.get.audience),
                appleToken <- self.generateAppleToken(clientId: verifiedPayload.get.audience, clientSecret: secretJWT.get, code: request.authorizationCode),
                  response <- self.generateBearer(tokenResponse: appleToken.get, expirationInterval: SignIn.expirationInterval),
@@ -45,13 +45,9 @@ final class AppleSignInClient: SignInClient {
         }^
     }
     
-    private func verify(payload: ApplePayload, request: AppleSignInRequest) -> EnvIO<API.Config, AppleSignInError, ApplePayload> {
+    private func verify(payload: ApplePayload) -> EnvIO<API.Config, AppleSignInError, ApplePayload> {
         guard payload.issuer == SignIn.appleIssuer else {
             return EnvIO.raiseError(.jwt(.invalidIssuer))^
-        }
-        
-        guard payload.subject == request.user else {
-            return EnvIO.raiseError(.jwt(.invalidUserID))^
         }
         
         guard payload.audience == SignIn.clientId else {

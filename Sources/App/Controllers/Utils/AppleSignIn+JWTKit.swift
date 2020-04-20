@@ -2,7 +2,7 @@ import Foundation
 import JWTKit
 import AppleSignIn
 
-// MARK: - Apple signers
+// MARK: - Apple signer
 struct AppleSigner {
     let kid: JWKIdentifier
     let signer: JWTSigner
