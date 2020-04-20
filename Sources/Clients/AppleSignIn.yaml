@@ -1,0 +1,53 @@
+openapi: "3.0.0"
+info:
+  title: Apple SignIn
+  version: "1.0.0"
+
+paths:
+  /auth/keys:
+    get:
+      operationId: getKeys
+      summary: Fetch Apple’s public key to verify the ID token signature.
+      responses:
+        '200':
+          description: The request was successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JWKSet'
+
+components:
+  schemas:
+
+    JWKSet:
+      type: object
+      required:
+        - keys
+      properties:
+        keys:
+          type: array
+          items:
+             $ref: '#/components/schemas/JWKKey'
+
+    JWKKey:
+      type: object
+      required:
+        - kty
+        - kid
+        - use
+        - alg
+        - n
+        - e
+      properties:
+        kty:
+          type: string
+        kid:
+          type: string
+        use:
+          type: string
+        alg:
+          type: string
+        n:
+          type: string
+        e:
+          type: string

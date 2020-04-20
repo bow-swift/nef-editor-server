@@ -1,8 +1,8 @@
 import Foundation
 import BowEffects
 
-/// Make JSONEncoder conform to RequestEncoder
-extension JSONEncoder: RequestEncoder {
+/// Make JSONEncoder conform to ResponseEncoder
+extension JSONEncoder: Encoder {
     func safeEncode<D, T>(_ value: T) -> EnvIO<D, EncodingError, Data> where T : Encodable {
         EnvIO.invoke { _ in
             do {
@@ -17,7 +17,7 @@ extension JSONEncoder: RequestEncoder {
 }
 
 /// Make JSONDecoder conform to RequestDecoder
-extension JSONDecoder: ResponseDecoder {
+extension JSONDecoder: Decoder {
     public func safeDecode<D, T>(_ type: T.Type, from data: Data) -> EnvIO<D, DecodingError, T> where T : Decodable {
         EnvIO.invoke { _ in
             do {

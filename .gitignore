@@ -27,3 +27,6 @@ Package.resolved
 *.xcodeproj
 .swiftpm
 .build
+
+## Auto generated files
+/Sources/Clients/AppleSignIn

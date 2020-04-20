@@ -20,21 +20,21 @@
         }
       },
       {
-        "package": "Bow",
-        "repositoryURL": "https://github.com/bow-swift/bow",
-        "state": {
-          "branch": "master",
-          "revision": "7abd8d952fb7912259ccc216c73264d8a8739541",
-          "version": null
-        }
-      },
-      {
         "package": "console-kit",
         "repositoryURL": "https://github.com/vapor/console-kit.git",
         "state": {
           "branch": null,
           "revision": "7a97a5ea7fefe61cf2c943242113125b0f396a98",
           "version": "4.1.0"
+        }
+      },
+      {
+        "package": "jwt-kit",
+        "repositoryURL": "https://github.com/vapor/jwt-kit",
+        "state": {
+          "branch": null,
+          "revision": "b5aa3d4eb91b54d0bd31a1a0c238199f2bf65969",
+          "version": "4.0.0-rc.1.4"
         }
       },
       {
@@ -51,8 +51,8 @@
         "repositoryURL": "https://github.com/vapor/routing-kit.git",
         "state": {
           "branch": null,
-          "revision": "35da702471cbcc308f58d38aa8fea971fa3fb166",
-          "version": "4.0.0"
+          "revision": "ee590c42d0b74fb6644c5ec128a2edc86c2858ff",
+          "version": "4.0.1"
         }
       },
       {
@@ -159,8 +159,8 @@
         "repositoryURL": "https://github.com/vapor/vapor.git",
         "state": {
           "branch": null,
-          "revision": "d00c85ded785b7c9a68045a4d2a4676625afeb97",
-          "version": "4.1.0"
+          "revision": "948f363fdeb8739200f4341810c26e88704e63f3",
+          "version": "4.3.0"
         }
       },
       {
