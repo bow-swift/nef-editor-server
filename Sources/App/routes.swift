@@ -10,7 +10,7 @@ struct RouteRegister {
     }
     
     func appleSignIn() {
-        let client = AppleSignInClient(decoder: JSONDecoder())
+        let client = AppleSignInClient()
         let apiConfig = API.Config(basePath: "https://appleid.apple.com")
             .appending(headers: ["Accept": "application/x-www-form-urlencoded",
                                  "Content-Type": "application/x-www-form-urlencoded"])

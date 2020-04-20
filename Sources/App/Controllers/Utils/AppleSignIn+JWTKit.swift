@@ -48,3 +48,15 @@ extension Array where Element == AppleSigner {
 extension AppleJWT: JWTPayload {
     func verify(using signer: JWTSigner) throws {}
 }
+
+extension AppleTokenJWT: JWTPayload {
+    func verify(using signer: JWTSigner) throws {}
+}
+
+extension JWTPayload {
+    static func unverifiedPayload(token: String) -> Result<Self, AppleSignInError> {
+        Result {
+            try JWTSigners().unverified(token, as: Self.self)
+        }.mapError { e in AppleSignInError.jwt(.decrypt(e)) }
+    }
+}
