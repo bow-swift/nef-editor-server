@@ -18,7 +18,7 @@ enum AppleSignInError: Error {
     }
     
     enum AppleToken: Error {
-        case invalidAppleJWT
+        case invalidPayload
         case encodingP8Key
         case clientSecret(Error)
         case response(Error)

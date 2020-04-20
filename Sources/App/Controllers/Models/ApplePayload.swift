@@ -1,6 +1,6 @@
 import Foundation
 
-struct AppleJWT: Codable {
+struct ApplePayload: Codable {
     let issuer: String
     let audience: String
     let expires: Date
@@ -25,7 +25,7 @@ struct AppleJWT: Codable {
     }
 }
 
-struct AppleTokenJWT: Codable {
+struct AppleTokenPayload: Codable {
     let issuer: String
     let audience: String
     let expires: Date

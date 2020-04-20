@@ -2,9 +2,21 @@ import Foundation
 import JWTKit
 import AppleSignIn
 
+// MARK: - Apple signers
 struct AppleSigner {
     let kid: JWKIdentifier
     let signer: JWTSigner
+}
+
+extension Array where Element == AppleSigner {
+    var jwtSigners: JWTSigners {
+        let signers = JWTSigners()
+        forEach { appleSigner in
+            signers.use(appleSigner.signer, kid: appleSigner.kid)
+        }
+        
+        return signers
+    }
 }
 
 extension JWKKey {
@@ -28,35 +40,26 @@ extension JWKKey {
     }
 }
 
-extension Array where Element == AppleSigner {
-    func decode(jwt: String) -> Result<AppleJWT, AppleSignInError> {
+// MARK: - Decode payload
+extension JWTSigners {
+    func verifiedPayload<Payload: JWTPayload>(jwt: String, as payload: Payload.Type = Payload.self) -> Result<Payload, AppleSignInError> {
         Result {
-            try jwtSigners.verify(jwt, as: AppleJWT.self)
+            try verify(jwt, as: Payload.self)
         }.mapError { e in AppleSignInError.jwt(.decrypt(e)) }
     }
     
-    private var jwtSigners: JWTSigners {
-        let signers = JWTSigners()
-        forEach { appleSigner in
-            signers.use(appleSigner.signer, kid: appleSigner.kid)
-        }
-        
-        return signers
-    }
-}
-
-extension AppleJWT: JWTPayload {
-    func verify(using signer: JWTSigner) throws {}
-}
-
-extension AppleTokenJWT: JWTPayload {
-    func verify(using signer: JWTSigner) throws {}
-}
-
-extension JWTPayload {
-    static func unverifiedPayload(token: String) -> Result<Self, AppleSignInError> {
+    func unverifiedPayload<Payload: JWTPayload>(token: String, as payload: Payload.Type = Payload.self) -> Result<Payload, AppleSignInError> {
         Result {
-            try JWTSigners().unverified(token, as: Self.self)
+            try unverified(token, as: Payload.self)
         }.mapError { e in AppleSignInError.jwt(.decrypt(e)) }
     }
+}
+
+extension ApplePayload: JWTPayload {
+    func verify(using signer: JWTSigner) throws {}
+}
+
+extension AppleTokenPayload: JWTPayload {
+    static var jwtSigners: JWTSigners { JWTSigners() }
+    func verify(using signer: JWTSigner) throws {}
 }

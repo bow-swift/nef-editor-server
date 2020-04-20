@@ -4,67 +4,65 @@ import Bow
 import BowEffects
 import AppleSignIn
 
-import JWTKit
-
 final class AppleSignInClient: SignInClient {
     
     func signIn(_ request: AppleSignInRequest) -> EnvIO<API.Config, AppleSignInError, AppleSignInResponse> {
-        let appleJWT = EnvIO<API.Config, AppleSignInError, AppleJWT>.var()
-        let verifiedJWT = EnvIO<API.Config, AppleSignInError, AppleJWT>.var()
-        let secret = EnvIO<API.Config, AppleSignInError, String>.var()
+        let applePayload = EnvIO<API.Config, AppleSignInError, ApplePayload>.var()
+        let verifiedPayload = EnvIO<API.Config, AppleSignInError, ApplePayload>.var()
+        let secretJWT = EnvIO<API.Config, AppleSignInError, String>.var()
         let appleToken = EnvIO<API.Config, AppleSignInError, AppleSignInTokenResponse>.var()
         let response = EnvIO<API.Config, AppleSignInError, AppleSignInResponse>.var()
         
         return binding(
-             appleJWT <- self.decode(identityToken: request.identityToken),
-          verifiedJWT <- self.verify(appleJWT: appleJWT.get, request: request),
-               secret <- self.clientSecret(teamId: SignIn.teamId, clientId: verifiedJWT.get.audience),
-           appleToken <- self.generateAppleToken(clientId: verifiedJWT.get.audience, clientSecret: secret.get, code: request.authorizationCode),
-             response <- self.generateBearer(tokenResponse: appleToken.get, expirationInterval: SignIn.expirationInterval),
+             applePayload <- self.getPayload(identityToken: request.identityToken),
+          verifiedPayload <- self.verify(payload: applePayload.get, request: request),
+                secretJWT <- self.clientSecret(teamId: SignIn.teamId, clientId: verifiedPayload.get.audience),
+               appleToken <- self.generateAppleToken(clientId: verifiedPayload.get.audience, clientSecret: secretJWT.get, code: request.authorizationCode),
+                 response <- self.generateBearer(tokenResponse: appleToken.get, expirationInterval: SignIn.expirationInterval),
         yield: response.get)^
     }
     
     // MARK: - JWT
-    private func decode(identityToken jwt: String) -> EnvIO<API.Config, AppleSignInError, AppleJWT> {
-        let jwks = EnvIO<API.Config, AppleSignInError, JWKSet>.var()
-        let appleJWT = EnvIO<API.Config, AppleSignInError, AppleJWT>.var()
-        
-        return binding(
-                jwks <- self.getAppleKeys(),
-            appleJWT <- self.decode(identityToken: jwt, jwks: jwks.get),
-        yield: appleJWT.get)^
-    }
-    
     private func getAppleKeys() -> EnvIO<API.Config, AppleSignInError, JWKSet> {
         AppleSignIn.API.default.getKeys()
             .mapError { e in .jwt(.appleKeysNotFound) }
     }
     
-    private func decode(identityToken: String, jwks: JWKSet) -> EnvIO<API.Config, AppleSignInError, AppleJWT> {
+    private func getPayload(identityToken jwt: String) -> EnvIO<API.Config, AppleSignInError, ApplePayload> {
+        let jwks = EnvIO<API.Config, AppleSignInError, JWKSet>.var()
+        let payload = EnvIO<API.Config, AppleSignInError, ApplePayload>.var()
+        
+        return binding(
+               jwks <- self.getAppleKeys(),
+            payload <- self.getPayload(identityToken: jwt, jwks: jwks.get),
+        yield: payload.get)^
+    }
+    
+    private func getPayload(identityToken: String, jwks: JWKSet) -> EnvIO<API.Config, AppleSignInError, ApplePayload> {
         EnvIO.invokeResult { _ in
             let signers = jwks.keys.compactMap { key in key.appleSigner }
-            return signers.decode(jwt: identityToken)
+            return signers.jwtSigners.verifiedPayload(jwt: identityToken)
         }^
     }
     
-    private func verify(appleJWT: AppleJWT, request: AppleSignInRequest) -> EnvIO<API.Config, AppleSignInError, AppleJWT> {
-        guard appleJWT.issuer == SignIn.appleIssuer else {
+    private func verify(payload: ApplePayload, request: AppleSignInRequest) -> EnvIO<API.Config, AppleSignInError, ApplePayload> {
+        guard payload.issuer == SignIn.appleIssuer else {
             return EnvIO.raiseError(.jwt(.invalidIssuer))^
         }
         
-        guard appleJWT.subject == request.user else {
+        guard payload.subject == request.user else {
             return EnvIO.raiseError(.jwt(.invalidUserID))^
         }
         
-        guard appleJWT.audience == SignIn.clientId else {
+        guard payload.audience == SignIn.clientId else {
             return EnvIO.raiseError(.jwt(.invalidClientID))^
         }
         
-        guard appleJWT.expires > Date() else {
+        guard payload.expires > Date() else {
             return EnvIO.raiseError(.jwt(.expiredJWT))^
         }
         
-        return EnvIO.pure(appleJWT)^
+        return EnvIO.pure(payload)^
     }
     
     // MARK: - Generate and validate tokens with Apple
@@ -89,7 +87,7 @@ final class AppleSignInClient: SignInClient {
         func appleSignInTokenError(httpError: API.HTTPError) -> EnvIO<API.Config, AppleSignInError.AppleToken, AppleSignInTokenResponse> {
             EnvIO.accessM { env in
                 guard let data = httpError.dataError?.data else {
-                    return EnvIO.raiseError(.invalidAppleJWT)^
+                    return EnvIO.raiseError(.invalidPayload)^
                 }
                 
                 return env.decoder.safeDecode(AppleSignIn.AppleSignInError.self, from: data)
@@ -111,7 +109,7 @@ final class AppleSignInClient: SignInClient {
     
     // MARK: - nef server authentication
     private func generateBearer(tokenResponse: AppleSignInTokenResponse, expirationInterval: TimeInterval) -> EnvIO<API.Config, AppleSignInError, AppleSignInResponse> {
-        let payload = EnvIO<API.Config, AppleSignInError, AppleTokenJWT>.var()
+        let payload = EnvIO<API.Config, AppleSignInError, AppleTokenPayload>.var()
         
         return binding(
             payload <- self.payload(tokenResponse: tokenResponse),
@@ -119,9 +117,9 @@ final class AppleSignInClient: SignInClient {
         #warning("TODO: from TokenResponse we will create a valid Bearer for authenticated services")
     }
     
-    private func payload(tokenResponse: AppleSignInTokenResponse) -> EnvIO<API.Config, AppleSignInError, AppleTokenJWT> {
+    private func payload(tokenResponse: AppleSignInTokenResponse) -> EnvIO<API.Config, AppleSignInError, AppleTokenPayload> {
         EnvIO.invokeResult { _ in
-            AppleTokenJWT.unverifiedPayload(token: tokenResponse.idToken)
+            AppleTokenPayload.jwtSigners.unverifiedPayload(token: tokenResponse.idToken)
         }
     }
     
