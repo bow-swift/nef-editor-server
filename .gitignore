@@ -30,3 +30,7 @@ Package.resolved
 
 ## Auto generated files
 /Sources/Clients/AppleSignIn
+
+## Vapor
+.env.*
+.run
