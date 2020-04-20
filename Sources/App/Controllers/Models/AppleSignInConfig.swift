@@ -3,6 +3,11 @@ import AppleSignIn
 
 struct AppleSignInConfig {
     let client: SignInClient
-    let apiConfig: API.Config
+    let clientConfig: AppleSignInClientConfig
     let responseEncoder: JSONEncoder
+}
+
+struct AppleSignInClientConfig {
+    let apiConfig: API.Config
+    let environment: AppleSignInEnvironment
 }

@@ -6,9 +6,9 @@ import AppleSignIn
 final class AppleSignInController {
     let config: AppleSignInConfig
     
-    init(client: SignInClient, apiConfig: API.Config, responseEncoder: JSONEncoder = JSONEncoder()) {
+    init(client: SignInClient, apiConfig: API.Config, environment: AppleSignInEnvironment, responseEncoder: JSONEncoder = JSONEncoder()) {
         self.config = AppleSignInConfig(client: client,
-                                        apiConfig: apiConfig,
+                                        clientConfig: .init(apiConfig: apiConfig, environment: environment),
                                         responseEncoder: responseEncoder)
     }
     
@@ -29,7 +29,7 @@ final class AppleSignInController {
         return binding(
                 env <- .ask(),
                body <- self.decodeRequest(body: request.content),
-           response <- env.get.client.signIn(body.get).contramap(\AppleSignInConfig.apiConfig),
+           response <- env.get.client.signIn(body.get).contramap(\AppleSignInConfig.clientConfig),
             encoded <- self.encodeResponse(response.get),
         yield: encoded.get)^
     }
