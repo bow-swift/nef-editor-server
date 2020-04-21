@@ -18,11 +18,13 @@ struct RouteRegister {
                 throw Abort(.internalServerError, reason: "credentials not found")
         }
 
-        let environment = AppleSignInEnvironment(p8Key: p8Key, teamId: teamId, keyId: keyId, clientId: clientId, redirectURI: redirectURI)
         let client = AppleSignInClient()
-        let apiConfig = API.Config(basePath: "https://appleid.apple.com")
-            .appending(headers: ["Accept": "application/x-www-form-urlencoded",
-                                 "Content-Type": "application/x-www-form-urlencoded"])
+        let apiConfig = API.Config(basePath: "https://appleid.apple.com").appending(contentType: .wwwFormUrlencoded)
+        let environment = AppleSignInEnvironment(p8Key: p8Key,
+                                                 teamId: teamId,
+                                                 keyId: keyId,
+                                                 clientId: clientId,
+                                                 redirectURI: redirectURI)
         
         let controller = AppleSignInController(client: client, apiConfig: apiConfig, environment: environment)
         app.post("signin", use: controller.handle)
