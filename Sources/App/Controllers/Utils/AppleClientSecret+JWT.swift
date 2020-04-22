@@ -4,7 +4,7 @@ extension AppleClientSecretPayload: Claims {}
 
 extension AppleClientSecret {
 
-    func sign(p8key: String) -> Result<String, AppleSignInError.AppleToken> {
+    func sign(p8key: String) -> Result<String, AppleSignInError.AppleTokenError> {
         guard let pkey = p8key.data(using: .utf8) else {
             return .failure(.encodingP8Key)
         }

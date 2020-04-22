@@ -5,10 +5,10 @@ enum AppleSignInError: Error {
     case encodingResponse(Error)
     case invalidUTF8Encoding
     
-    case jwt(JWT)
-    case appleToken(AppleToken)
+    case jwt(JWTError)
+    case invalidAppleToken(AppleTokenError)
     
-    enum JWT: Error {
+    enum JWTError: Error {
         case appleKeysNotFound
         case decrypt(Error)
         case invalidClientID
@@ -17,7 +17,7 @@ enum AppleSignInError: Error {
         case expiredJWT
     }
     
-    enum AppleToken: Error {
+    enum AppleTokenError: Error {
         case invalidPayload
         case encodingP8Key
         case clientSecret(Error)

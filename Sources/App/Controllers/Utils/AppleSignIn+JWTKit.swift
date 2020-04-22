@@ -9,13 +9,15 @@ struct AppleSigner {
 }
 
 extension Array where Element == AppleSigner {
-    var jwtSigners: JWTSigners {
-        let signers = JWTSigners()
-        forEach { appleSigner in
-            signers.use(appleSigner.signer, kid: appleSigner.kid)
+    var jwtSigners: JWTSigners { .init(appleSigners: self) }
+}
+
+private extension JWTSigners {
+    convenience init(appleSigners: [AppleSigner]) {
+        self.init()
+        appleSigners.forEach { appleSigner in
+            use(appleSigner.signer, kid: appleSigner.kid)
         }
-        
-        return signers
     }
 }
 

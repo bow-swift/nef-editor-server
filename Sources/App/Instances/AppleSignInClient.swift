@@ -64,17 +64,17 @@ final class AppleSignInClient: SignInClient {
     
     // MARK: - Generate and validate tokens with Apple
     private func generateAppleToken(code: String) -> EnvIO<AppleSignInClientConfig, AppleSignInError, AppleSignInTokenResponse> {
-        let secret = EnvIO<AppleSignInClientConfig, AppleSignInError.AppleToken, String>.var()
-        let token = EnvIO<AppleSignInClientConfig, AppleSignInError.AppleToken, AppleSignInTokenResponse>.var()
+        let secret = EnvIO<AppleSignInClientConfig, AppleSignInError.AppleTokenError, String>.var()
+        let token = EnvIO<AppleSignInClientConfig, AppleSignInError.AppleTokenError, AppleSignInTokenResponse>.var()
         
         return binding(
            secret <- self.clientSecret(),
             token <- self.getToken(clientSecret: secret.get, code: code),
-        yield: token.get)^.mapError { e in .appleToken(e) }^
+        yield: token.get)^.mapError { e in .invalidAppleToken(e) }^
     }
     
-    func getToken(clientSecret: String, code: String) -> EnvIO<AppleSignInClientConfig, AppleSignInError.AppleToken, AppleSignInTokenResponse> {
-        func appleSignInTokenError(httpError: API.HTTPError) -> EnvIO<AppleSignInClientConfig, AppleSignInError.AppleToken, AppleSignInTokenResponse> {
+    func getToken(clientSecret: String, code: String) -> EnvIO<AppleSignInClientConfig, AppleSignInError.AppleTokenError, AppleSignInTokenResponse> {
+        func appleSignInTokenError(httpError: API.HTTPError) -> EnvIO<AppleSignInClientConfig, AppleSignInError.AppleTokenError, AppleSignInTokenResponse> {
             EnvIO.accessM { env in
                 guard let data = httpError.dataError?.data else {
                     return EnvIO.raiseError(.invalidPayload)^
@@ -99,7 +99,7 @@ final class AppleSignInClient: SignInClient {
         }
     }
     
-    private func clientSecret(issuedAt: Date = Date()) -> EnvIO<AppleSignInClientConfig, AppleSignInError.AppleToken, String> {
+    private func clientSecret(issuedAt: Date = Date()) -> EnvIO<AppleSignInClientConfig, AppleSignInError.AppleTokenError, String> {
         EnvIO.invokeResult { env in
             let expirationDate = issuedAt.addingTimeInterval(env.environment.expirationInterval)
             
