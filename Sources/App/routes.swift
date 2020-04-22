@@ -6,31 +6,48 @@ struct RouteRegister {
     
     func playgroundBook() throws {
         let controller = PlaygroundBookController(playgroundBook: PlaygroundBookServer(), config: config)
+        
         app.webSocket("playgroundBook", onUpgrade: controller.handler)
     }
     
     func appleSignIn() throws {
+        let environment = try signInEnvironment()
+        let client = AppleSignInClient()
+        let apiConfig = API.Config(basePath: "https://appleid.apple.com").appending(contentType: .wwwFormUrlencoded)
+        let controller = AppleSignInController(client: client, apiConfig: apiConfig, environment: environment)
+        
+        app.post("signin", use: controller.handle)
+    }
+    
+    // MARK: - Environment
+    private func signInEnvironment() throws -> SignInEnvironment {
+        try .init(sigIn: appleEnvironment(), bearer: bearerEnvironment())
+    }
+    
+    private func appleEnvironment() throws -> AppleSignInEnvironment {
         guard let p8Key = Environment.get("p8Key"),
               let teamId = Environment.get("teamId"),
               let keyId = Environment.get("keyId"),
               let clientId = Environment.get("clientId"),
-              let redirectURI = Environment.get("redirectURI"),
-              let privateKey = Environment.get("privateKey"),
-              let publicKey = Environment.get("publicKey") else {
-                throw Abort(.internalServerError, reason: "credentials not found")
+              let redirectURI = Environment.get("redirectURI") else {
+                throw Abort(.internalServerError, reason: "Apple sign-in credentials not found")
         }
-
-        let client = AppleSignInClient()
-        let apiConfig = API.Config(basePath: "https://appleid.apple.com").appending(contentType: .wwwFormUrlencoded)
-        let bearerEnvironment = BearerEnvironment(privateKey: privateKey, publicKey: publicKey)
-        let appleEnvironment = AppleSignInEnvironment(p8Key: p8Key,
-                                                      teamId: teamId,
-                                                      keyId: keyId,
-                                                      clientId: clientId,
-                                                      redirectURI: redirectURI)
         
-        let controller = AppleSignInController(client: client, apiConfig: apiConfig, environment: .init(sigIn: appleEnvironment, bearer: bearerEnvironment))
-        app.post("signin", use: controller.handle)
+        return .init(p8Key: p8Key,
+                     teamId: teamId,
+                     keyId: keyId,
+                     clientId: clientId,
+                     redirectURI: redirectURI)
+    }
+    
+    private func bearerEnvironment() throws -> BearerEnvironment {
+        guard let privateKey = Environment.get("privateKey"),
+              let publicKey = Environment.get("publicKey") else {
+                throw Abort(.internalServerError, reason: "Bearer credentials not found")
+        }
+        
+        return .init(privateKey: privateKey,
+                     publicKey: publicKey)
     }
 }
 
