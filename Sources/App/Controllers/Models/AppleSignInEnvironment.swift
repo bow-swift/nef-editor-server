@@ -1,7 +1,7 @@
 import Foundation
 
 struct SignInEnvironment {
-    let sigIn: AppleSignInEnvironment
+    let signIn: AppleSignInEnvironment
     let bearer: BearerEnvironment
 }
 

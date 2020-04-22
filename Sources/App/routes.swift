@@ -20,7 +20,7 @@ struct RouteRegister {
     
     // MARK: - Environment
     private func signInEnvironment() throws -> SignInEnvironment {
-        try .init(sigIn: appleEnvironment(), bearer: bearerEnvironment())
+        try .init(signIn: appleEnvironment(), bearer: bearerEnvironment())
     }
     
     private func appleEnvironment() throws -> AppleSignInEnvironment {

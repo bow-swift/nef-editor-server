@@ -37,17 +37,17 @@ final class AppleSignInController {
     private func decodeRequest(body: ContentContainer) -> EnvIO<AppleSignInConfig, SignInError, AppleSignInRequest> {
         EnvIO.invoke { _ in
             try body.decode(AppleSignInRequest.self)
-        }.mapError { error in .decodingRequest(error) }^
+        }.mapError { error in .invalidCodification(.decodingRequest(error)) }^
     }
     
     private func encodeResponse(_ response: AppleSignInResponse) -> EnvIO<AppleSignInConfig, SignInError, String> {
         EnvIO.accessM { env in
             env.responseEncoder.safeEncode(response)^
-                .mapError { e in .encodingResponse(e) }^
+                .mapError { e in .invalidCodification(.encodingResponse(e)) }^
                 .flatMap { encoded in
                     EnvIO.invoke { _ in
                         guard let string = String(data: encoded, encoding: .utf8) else {
-                            throw SignInError.invalidUTF8Encoding
+                            throw SignInError.invalidCodification(.invalidUTF8Encoding)
                         }
                         
                         return string

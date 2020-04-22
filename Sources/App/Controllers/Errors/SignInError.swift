@@ -1,10 +1,7 @@
 import Foundation
 
 enum SignInError: Error {
-    case decodingRequest(Error)
-    case encodingResponse(Error)
-    case invalidUTF8Encoding
-    
+    case invalidCodification(CodificationError)
     case jwt(JWTError)
     case appleToken(AppleTokenError)
     case bearer(BearerError)

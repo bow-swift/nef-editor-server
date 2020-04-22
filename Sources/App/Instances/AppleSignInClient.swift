@@ -46,11 +46,11 @@ final class AppleSignInClient: SignInClient {
     
     private func verify(payload: ApplePayload) -> EnvIO<AppleSignInClientConfig, SignInError, ApplePayload> {
         EnvIO.invoke { env in
-            guard payload.issuer == env.environment.sigIn.issuer else {
+            guard payload.issuer == env.environment.signIn.issuer else {
                 throw JWTError.invalidIssuer
             }
             
-            guard payload.audience == env.environment.sigIn.clientId else {
+            guard payload.audience == env.environment.signIn.clientId else {
                 throw JWTError.invalidClientID
             }
             
@@ -89,11 +89,11 @@ final class AppleSignInClient: SignInClient {
         
         return EnvIO.accessM { env in
             AppleSignIn.API.default
-                .token(clientId: env.environment.sigIn.clientId,
+                .token(clientId: env.environment.signIn.clientId,
                        clientSecret: clientSecret,
                        grantType: .authorizationCode,
                        code: code,
-                       redirectUri: env.environment.sigIn.redirectURI)
+                       redirectUri: env.environment.signIn.redirectURI)
                 .contramap(\.apiConfig)
                 .flatMapError(appleSignInTokenError)
         }
@@ -103,14 +103,14 @@ final class AppleSignInClient: SignInClient {
         EnvIO.invokeResult { env in
             let expirationDate = issuedAt.addingTimeInterval(env.environment.bearer.expirationInterval)
             
-            let payload = AppleClientSecretPayload(iss: env.environment.sigIn.teamId,
+            let payload = AppleClientSecretPayload(iss: env.environment.signIn.teamId,
                                                    iat: issuedAt,
                                                    exp: expirationDate,
-                                                   aud: env.environment.sigIn.issuer,
-                                                   sub: env.environment.sigIn.clientId)
+                                                   aud: env.environment.signIn.issuer,
+                                                   sub: env.environment.signIn.clientId)
 
-            return AppleClientSecret(kid: env.environment.sigIn.keyId, payload: payload)
-                .sign(p8key: env.environment.sigIn.p8Key)
+            return AppleClientSecret(kid: env.environment.signIn.keyId, payload: payload)
+                .sign(p8key: env.environment.signIn.p8Key)
         }
     }
     
