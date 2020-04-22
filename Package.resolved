@@ -20,6 +20,33 @@
         }
       },
       {
+        "package": "Cryptor",
+        "repositoryURL": "https://github.com/IBM-Swift/BlueCryptor.git",
+        "state": {
+          "branch": null,
+          "revision": "12d2bf3ec7207ec3cd004b9582f69ef5fae1da3b",
+          "version": "1.0.32"
+        }
+      },
+      {
+        "package": "CryptorECC",
+        "repositoryURL": "https://github.com/IBM-Swift/BlueECC.git",
+        "state": {
+          "branch": null,
+          "revision": "73f362cb0d9c5f1fd0089240d7b293cd2bff18db",
+          "version": "1.2.5"
+        }
+      },
+      {
+        "package": "CryptorRSA",
+        "repositoryURL": "https://github.com/IBM-Swift/BlueRSA.git",
+        "state": {
+          "branch": null,
+          "revision": "8ea901f2582296837d88f882b0fa5a0601759598",
+          "version": "1.0.35"
+        }
+      },
+      {
         "package": "console-kit",
         "repositoryURL": "https://github.com/vapor/console-kit.git",
         "state": {
@@ -30,11 +57,29 @@
       },
       {
         "package": "jwt-kit",
-        "repositoryURL": "https://github.com/vapor/jwt-kit",
+        "repositoryURL": "https://github.com/vapor/jwt-kit.git",
         "state": {
           "branch": null,
           "revision": "b5aa3d4eb91b54d0bd31a1a0c238199f2bf65969",
           "version": "4.0.0-rc.1.4"
+        }
+      },
+      {
+        "package": "KituraContracts",
+        "repositoryURL": "https://github.com/IBM-Swift/KituraContracts.git",
+        "state": {
+          "branch": null,
+          "revision": "a30e2fb79e926672776a05ec6b919c239870a221",
+          "version": "1.2.1"
+        }
+      },
+      {
+        "package": "LoggerAPI",
+        "repositoryURL": "https://github.com/IBM-Swift/LoggerAPI.git",
+        "state": {
+          "branch": null,
+          "revision": "3357dd9526cdf9436fa63bb792b669e6efdc43da",
+          "version": "1.9.0"
         }
       },
       {
@@ -51,8 +96,8 @@
         "repositoryURL": "https://github.com/vapor/routing-kit.git",
         "state": {
           "branch": null,
-          "revision": "ee590c42d0b74fb6644c5ec128a2edc86c2858ff",
-          "version": "4.0.1"
+          "revision": "e7f2d5bd36dc65a9edb303541cb678515a7fece3",
+          "version": "4.1.0"
         }
       },
       {
@@ -80,6 +125,15 @@
           "branch": null,
           "revision": "d67ac68d09a95443303e9d6e37b34e7ba101d5f1",
           "version": "1.0.1"
+        }
+      },
+      {
+        "package": "SwiftJWT",
+        "repositoryURL": "https://github.com/IBM-Swift/Swift-JWT.git",
+        "state": {
+          "branch": null,
+          "revision": "0d435423d12e61c0d14adb6d04396c08a6a650f1",
+          "version": "3.6.1"
         }
       },
       {
@@ -159,8 +213,8 @@
         "repositoryURL": "https://github.com/vapor/vapor.git",
         "state": {
           "branch": null,
-          "revision": "948f363fdeb8739200f4341810c26e88704e63f3",
-          "version": "4.3.0"
+          "revision": "9b4ebf7fb16766d27d6ca49cfa1cdfe2dc20032f",
+          "version": "4.3.1"
         }
       },
       {

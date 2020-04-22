@@ -2,9 +2,23 @@ import Foundation
 import JWTKit
 import AppleSignIn
 
+// MARK: - Apple signer
 struct AppleSigner {
     let kid: JWKIdentifier
     let signer: JWTSigner
+}
+
+extension Array where Element == AppleSigner {
+    var jwtSigners: JWTSigners { .init(appleSigners: self) }
+}
+
+private extension JWTSigners {
+    convenience init(appleSigners: [AppleSigner]) {
+        self.init()
+        appleSigners.forEach { appleSigner in
+            use(appleSigner.signer, kid: appleSigner.kid)
+        }
+    }
 }
 
 extension JWKKey {
@@ -28,23 +42,26 @@ extension JWKKey {
     }
 }
 
-extension Array where Element == AppleSigner {
-    func decode(jwt: String) -> Result<AppleJWT, AppleSignInError> {
+// MARK: - Decode payload
+extension JWTSigners {
+    func verifiedPayload<Payload: JWTPayload>(jwt: String, as payload: Payload.Type = Payload.self) -> Result<Payload, AppleSignInError> {
         Result {
-            try jwtSigners.verify(jwt, as: AppleJWT.self)
+            try verify(jwt, as: Payload.self)
         }.mapError { e in AppleSignInError.jwt(.decrypt(e)) }
     }
     
-    private var jwtSigners: JWTSigners {
-        let signers = JWTSigners()
-        forEach { appleSigner in
-            signers.use(appleSigner.signer, kid: appleSigner.kid)
-        }
-        
-        return signers
+    func unverifiedPayload<Payload: JWTPayload>(token: String, as payload: Payload.Type = Payload.self) -> Result<Payload, AppleSignInError> {
+        Result {
+            try unverified(token, as: Payload.self)
+        }.mapError { e in AppleSignInError.jwt(.decrypt(e)) }
     }
 }
 
-extension AppleJWT: JWTPayload {
+extension ApplePayload: JWTPayload {
+    func verify(using signer: JWTSigner) throws {}
+}
+
+extension AppleTokenPayload: JWTPayload {
+    static var jwtSigners: JWTSigners { JWTSigners() }
     func verify(using signer: JWTSigner) throws {}
 }
