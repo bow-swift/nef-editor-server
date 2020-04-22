@@ -10,14 +10,14 @@ final class AppleSignInClient: SignInClient {
         let applePayload = EnvIO<AppleSignInClientConfig, SignInError, ApplePayload>.var()
         let verifiedPayload = EnvIO<AppleSignInClientConfig, SignInError, ApplePayload>.var()
         let appleToken = EnvIO<AppleSignInClientConfig, SignInError, AppleSignInTokenResponse>.var()
-        let response = EnvIO<AppleSignInClientConfig, SignInError, AppleSignInResponse>.var()
+        let bearer = EnvIO<AppleSignInClientConfig, SignInError, String>.var()
         
         return binding(
              applePayload <- self.getPayload(identityToken: request.identityToken).mapError { e in .jwt(e) },
           verifiedPayload <- self.verify(payload: applePayload.get).mapError { e in .jwt(e) },
                appleToken <- self.generateAppleToken(code: request.authorizationCode).mapError { e in .appleToken(e) },
-                 response <- self.generateBearer(tokenResponse: appleToken.get).mapError { e in .bearer(e) },
-        yield: response.get)^
+                   bearer <- self.generateBearer(tokenResponse: appleToken.get).mapError { e in .bearer(e) },
+        yield: .init(token: bearer.get))^
     }
     
     func verify(_ bearer: String) -> EnvIO<BearerEnvironment, BearerError, BearerPayload> {
@@ -125,7 +125,7 @@ final class AppleSignInClient: SignInClient {
     }
     
     // MARK: - Bearer
-    private func generateBearer(tokenResponse: AppleSignInTokenResponse) -> EnvIO<AppleSignInClientConfig, BearerError, AppleSignInResponse> {
+    private func generateBearer(tokenResponse: AppleSignInTokenResponse) -> EnvIO<AppleSignInClientConfig, BearerError, String> {
         let payload = EnvIO<BearerEnvironment, BearerError, AppleTokenPayload>.var()
         let bearerPayload = EnvIO<BearerEnvironment, BearerError, BearerPayload>.var()
         let bearer = EnvIO<BearerEnvironment, BearerError, String>.var()
@@ -134,7 +134,7 @@ final class AppleSignInClient: SignInClient {
                  payload <- self.payload(tokenResponse: tokenResponse),
            bearerPayload <- self.generateBearerPayload(payload: payload.get),
                   bearer <- self.generateBearer(payload: bearerPayload.get),
-        yield: .init(token: bearer.get))^
+        yield: bearer.get)^
             .contramap(\.environment.bearer)
     }
     

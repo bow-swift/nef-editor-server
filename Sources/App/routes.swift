@@ -6,7 +6,6 @@ struct RouteRegister {
     
     func playgroundBook() throws {
         let controller = PlaygroundBookController(playgroundBook: PlaygroundBookServer(), config: config)
-        
         app.webSocket("playgroundBook", onUpgrade: controller.handler)
     }
     
@@ -41,8 +40,8 @@ struct RouteRegister {
     }
     
     private func bearerEnvironment() throws -> BearerEnvironment {
-        guard let privateKey = Environment.get("privateKey"),
-              let publicKey = Environment.get("publicKey") else {
+        guard let privateKey = Environment.get("privateRS256Key"),
+              let publicKey = Environment.get("publicRS256Key") else {
                 throw Abort(.internalServerError, reason: "Bearer credentials not found")
         }
         
