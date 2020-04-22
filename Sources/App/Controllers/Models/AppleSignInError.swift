@@ -1,12 +1,13 @@
 import Foundation
 
-enum AppleSignInError: Error {
+enum SignInError: Error {
     case decodingRequest(Error)
     case encodingResponse(Error)
     case invalidUTF8Encoding
     
     case jwt(JWTError)
     case invalidAppleToken(AppleTokenError)
+    case bearer(BearerError)
     
     enum JWTError: Error {
         case appleKeysNotFound
@@ -22,5 +23,11 @@ enum AppleSignInError: Error {
         case encodingP8Key
         case clientSecret(Error)
         case response(Error)
+    }
+    
+    enum BearerError: Error {
+        case encodingRS256Key
+        case signing(Error)
+        case invalidPayload(Error)
     }
 }

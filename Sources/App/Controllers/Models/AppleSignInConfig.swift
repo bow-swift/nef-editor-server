@@ -9,5 +9,5 @@ struct AppleSignInConfig {
 
 struct AppleSignInClientConfig {
     let apiConfig: API.Config
-    let environment: AppleSignInEnvironment
+    let environment: SignInEnvironment
 }
