@@ -20,8 +20,14 @@ final class AppleSignInClient: SignInClient {
         yield: response.get)^
     }
     
-    func verify(_ bearer: String) -> EnvIO<BearerEnvironment, SignInError, BearerPayload> {
-        fatalError()
+    func verify(_ bearer: String) -> EnvIO<BearerEnvironment, SignInError.BearerError, BearerPayload> {
+        let bearerPayload = EnvIO<BearerEnvironment, SignInError.BearerError, BearerPayload>.var()
+        let verifiedPayload = EnvIO<BearerEnvironment, SignInError.BearerError, BearerPayload>.var()
+        
+        return binding(
+             bearerPayload <- self.getPayload(bearer: bearer),
+           verifiedPayload <- self.verify(payload: bearerPayload.get),
+        yield: verifiedPayload.get)^
     }
     
     // MARK: - JWT
@@ -152,6 +158,30 @@ final class AppleSignInClient: SignInClient {
     private func generateBearer(payload: BearerPayload) -> EnvIO<BearerEnvironment, SignInError.BearerError, String> {
         EnvIO.invokeResult { env in
             Bearer(payload: payload).sign(rs256: env.privateKey)
+        }
+    }
+    
+    private func getPayload(bearer: String) -> EnvIO<BearerEnvironment, SignInError.BearerError, BearerPayload> {
+        EnvIO.invokeResult { env in
+            bearer.verifiedPayload(rs256: env.publicKey)
+        }
+    }
+    
+    private func verify(payload: BearerPayload) -> EnvIO<BearerEnvironment, SignInError.BearerError, BearerPayload> {
+        EnvIO.invoke { env in
+            guard payload.issuer == env.issuer else {
+                throw SignInError.BearerError.invalidIssuer
+            }
+            
+            guard payload.issuedAt < payload.expires else {
+                throw SignInError.BearerError.invalidIssuedAt
+            }
+            
+            guard payload.expires > Date() else {
+                throw SignInError.BearerError.expiredJWT
+            }
+            
+            return payload
         }
     }
 }
