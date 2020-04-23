@@ -36,22 +36,35 @@ final class PlaygroundBookServer: PlaygroundBook {
     private func buildPlaygroundBook(command: PlaygroundBookCommand.Incoming) -> EnvIO<PlaygroundBookConfig, PlaygroundBookCommandError, PlaygroundBookGenerated> {
         switch command {
         case .recipe(let recipe):
-            return buildPlaygroundBook(for: recipe)
+            return buildPlaygroundBook(recipe)
         case .unsupported:
             return EnvIO.raiseError(.init(description: "Unsupported command: \(command)", code: "404"))^
         }
     }
     
-    private func buildPlaygroundBook(for recipe: PlaygroundRecipe) -> EnvIO<PlaygroundBookConfig, PlaygroundBookCommandError, PlaygroundBookGenerated> {
+    private func buildPlaygroundBook(_ recipe: PlaygroundRecipe) -> EnvIO<PlaygroundBookConfig, PlaygroundBookCommandError, PlaygroundBookGenerated> {
+        buildPlaygroundBook(recipe)
+            .map { data in PlaygroundBookGenerated(name: recipe.name, zip: data) }^
+    }
+    
+    private func buildPlaygroundBook(_ recipe: PlaygroundRecipe) -> EnvIO<PlaygroundBookConfig, PlaygroundBookCommandError, URL> {
         EnvIO { env in
             let package = recipe.swiftPackage
-            return nef.SwiftPlayground.render(
-                packageContent: package.content,
-                name: package.name,
-                output: env.outputDirectory)
-                .provide(env.console)
-                .map { url in PlaygroundBookGenerated(name: package.name, url: url) }^
-                .mapError { e in PlaygroundBookCommandError(description: "\(e)", code: "500") }
+            let render = nef.SwiftPlayground.render(packageContent: package.content,
+                                                    name: package.name,
+                                                    output: env.outputDirectory)
+            
+            return render.provide(env.console)
+                .mapError { e in .init(description: "\(e)", code: "500") }^
         }
+    }
+    
+    private func buildPlaygroundBook(_ recipe: PlaygroundRecipe) -> EnvIO<PlaygroundBookConfig, PlaygroundBookCommandError, Data> {
+        buildPlaygroundBook(recipe)
+            .flatMap { url in
+                url.zipIO(name: recipe.name)
+                    .mapError { e in .init(description: e.localizedDescription, code: "500") }
+                    .contramap(\.fileManager)
+            }^
     }
 }

@@ -17,7 +17,7 @@ extension WebSocketOutput {
         
         return binding(
            encoder <- .ask(),
-              data <- encoder.get.commandEncoder.safeEncode(command).mapError { e in WebSocketError.encoding(error: e) },
+              data <- encoder.get.commandEncoder.safeEncode(command).mapError { e in .encoding(error: e) },
                    |<-self.send(binary: data.get),
         yield: ())^
     }
