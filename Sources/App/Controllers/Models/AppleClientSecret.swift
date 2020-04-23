@@ -8,9 +8,7 @@ struct AppleClientSecretPayload: Codable {
     let sub: String
 }
 
-struct AppleClientSecret {
+struct AppleClientSecret: Codable {
     let kid: String
     let payload: AppleClientSecretPayload
 }
-
-

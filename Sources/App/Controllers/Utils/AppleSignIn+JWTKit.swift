@@ -44,16 +44,16 @@ extension JWKKey {
 
 // MARK: - Decode payload
 extension JWTSigners {
-    func verifiedPayload<Payload: JWTPayload>(jwt: String, as payload: Payload.Type = Payload.self) -> Result<Payload, AppleSignInError> {
+    func verifiedPayload<Payload: JWTPayload>(jwt: String, as payload: Payload.Type = Payload.self) -> Result<Payload, JWTError> {
         Result {
             try verify(jwt, as: Payload.self)
-        }.mapError { e in AppleSignInError.jwt(.decrypt(e)) }
+        }.mapError { e in .decrypt(e) }
     }
     
-    func unverifiedPayload<Payload: JWTPayload>(token: String, as payload: Payload.Type = Payload.self) -> Result<Payload, AppleSignInError> {
+    func unverifiedPayload<Payload: JWTPayload>(token: String, as payload: Payload.Type = Payload.self) -> Result<Payload, JWTError> {
         Result {
             try unverified(token, as: Payload.self)
-        }.mapError { e in AppleSignInError.jwt(.decrypt(e)) }
+        }.mapError { e in .decrypt(e) }
     }
 }
 
