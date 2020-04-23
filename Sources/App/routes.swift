@@ -6,7 +6,11 @@ struct RouteRegister {
     
     func playgroundBook() throws {
         let controller = PlaygroundBookController(playgroundBook: PlaygroundBookServer(), config: config)
-        app.webSocket("playgroundBook", onUpgrade: controller.handler)
+        let bearerAuth = try BearerAuthorizationMiddleware(authorization: AuthorizationServer(), environment: bearerEnvironment())
+        
+        app.grouped(bearerAuth)
+           .grouped(Bearer.guardMiddleware())
+           .webSocket("playgroundBook", onUpgrade: controller.handler)
     }
     
     func appleSignIn() throws {
@@ -18,7 +22,7 @@ struct RouteRegister {
         app.post("signin", use: controller.handle)
     }
     
-    // MARK: - Environment
+    // MARK: - Environments
     private func signInEnvironment() throws -> SignInEnvironment {
         try .init(signIn: appleEnvironment(), bearer: bearerEnvironment())
     }
