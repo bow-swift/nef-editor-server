@@ -5,14 +5,14 @@ import BowEffects
 
 final class AuthorizationServer: Authorization {
     
-    func verify(_ bearer: String) -> EnvIO<BearerEnvironment, BearerError, BearerPayload> {
+    func verify(_ bearer: String) -> EnvIO<BearerEnvironment, BearerError, Bearer> {
         let bearerPayload = EnvIO<BearerEnvironment, BearerError, BearerPayload>.var()
         let verifiedPayload = EnvIO<BearerEnvironment, BearerError, BearerPayload>.var()
         
         return binding(
              bearerPayload <- self.getPayload(bearer: bearer),
            verifiedPayload <- self.verify(payload: bearerPayload.get),
-        yield: verifiedPayload.get)^
+        yield: .init(payload: verifiedPayload.get))^
     }
     
     // MARK: - Bearer
