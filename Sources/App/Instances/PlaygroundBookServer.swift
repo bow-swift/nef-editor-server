@@ -3,6 +3,7 @@ import nef
 import Bow
 import BowEffects
 import NefEditorData
+import NefEditorUtils
 
 
 final class PlaygroundBookServer: PlaygroundBook {

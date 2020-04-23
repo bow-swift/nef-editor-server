@@ -8,6 +8,7 @@ let package = Package(
     ],
     products: [
         .library(name: "NefEditorData", targets: ["NefEditorData"]),
+        .library(name: "NefEditorUtils", targets: ["NefEditorUtils"]),
     ],
     dependencies: [
         .package(url: "https://github.com/vapor/vapor.git", .exact("4.3.1")),
@@ -19,13 +20,17 @@ let package = Package(
     ],
     targets: [
         .target(name: "NefEditorData"),
+        .target(name: "NefEditorUtils", dependencies: [
+            .product(name: "ZIPFoundation", package: "ZIPFoundation"),
+            .product(name: "nef", package: "nef"),
+        ]),
         .target(name: "App", dependencies: [
             .target(name: "NefEditorData"),
+            .target(name: "NefEditorUtils"),
             .product(name: "AppleSignIn", package: "AppleSignIn"),
             .product(name: "Vapor", package: "vapor"),
             .product(name: "JWTKit", package: "jwt-kit"),
             .product(name: "SwiftJWT", package: "SwiftJWT"),
-            .product(name: "ZIPFoundation", package: "ZIPFoundation"),
             .product(name: "nef", package: "nef"),
         ]),
         .target(name: "Run", dependencies: ["App"]),
