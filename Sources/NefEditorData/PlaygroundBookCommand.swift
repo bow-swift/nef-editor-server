@@ -1,13 +1,13 @@
 import Foundation
 
 public enum PlaygroundBookCommand {
-    public enum Outgoing: Encodable {
+    public enum Outgoing: Codable {
         case event(PlaygroundBookEvent)
         case playgroundBookGenerated(PlaygroundBookGenerated)
         case error(PlaygroundBookCommandError)
     }
     
-    public enum Incoming: Decodable {
+    public enum Incoming: Codable {
         case recipe(PlaygroundRecipe)
         case unsupported
     }
@@ -35,11 +35,38 @@ extension PlaygroundBookCommand.Outgoing {
             try container.encode(error, forKey: .error)
         }
     }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        if let event = try? container.decode(PlaygroundBookEvent.self, forKey: .event) {
+            self = .event(event)
+        } else if let generated = try? container.decode(PlaygroundBookGenerated.self, forKey: .playgroundBookGenerated) {
+            self = .playgroundBookGenerated(generated)
+        } else if let error = try? container.decode(PlaygroundBookCommandError.self, forKey: .error) {
+            self = .error(error)
+        } else {
+            throw PlaygroundBookCommandError(description: "invalid value found in decoder from PlaygroundBookCommand.Outgoing",
+                                             code: "404")
+        }
+    }
 }
 
 extension PlaygroundBookCommand.Incoming {
     private enum CodingKeys: String, CodingKey {
         case recipe
+        case unsupported
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        
+        switch self {
+        case .recipe(let recipe):
+            try container.encode(recipe, forKey: .recipe)
+        case .unsupported:
+            try container.encode("unsupported", forKey: .unsupported)
+        }
     }
     
     public init(from decoder: Decoder) throws {
