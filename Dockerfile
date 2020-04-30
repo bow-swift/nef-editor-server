@@ -22,13 +22,11 @@ RUN swift build \
 # ================================
 # Run image
 # ================================
-FROM vapor/ubuntu:18.04
+FROM swift:5.2
 WORKDIR /run
 
 # Copy build artifacts
 COPY --from=build /build/.build/release /run
-# Copy Swift runtime libraries
-COPY --from=build /usr/lib/swift/ /usr/lib/swift/
 # Copy environments
 COPY --from=build /build/.run/.env* /run/
 
