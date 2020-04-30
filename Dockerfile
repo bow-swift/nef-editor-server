@@ -7,6 +7,12 @@ WORKDIR /build
 # Copy entire repo into container
 COPY . .
 
+# Add dependencies to image
+RUN apt-get update && apt-get install -y \
+    openssl \
+		libssl-dev \
+		zlib1g
+
 # Compile with optimizations
 RUN swift build \
 	--enable-test-discovery \
@@ -23,8 +29,8 @@ WORKDIR /run
 COPY --from=build /build/.build/release /run
 # Copy Swift runtime libraries
 COPY --from=build /usr/lib/swift/ /usr/lib/swift/
-# Uncomment the next line if you need to load resources from the `Public` directory
-#COPY --from=build /build/Public /run/Public
+# Copy environments
+COPY --from=build /build/.run/.env* /run/
 
 ENTRYPOINT ["./Run"]
 CMD ["serve", "--env", "production", "--hostname", "0.0.0.0"]
