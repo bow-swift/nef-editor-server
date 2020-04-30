@@ -40,7 +40,7 @@ final class AppleSignInClient: SignInClient {
     
     private func getAppleKeys() -> EnvIO<AppleSignInClientConfig, SignInError, JWKSet> {
         AppleSignIn.API.default.getKeys()
-            .contramap(\AppleSignInClientConfig.apiConfig)
+            .contramap(\.apiConfig)
             .mapError { e in .jwt(.appleKeysNotFound) }
     }
     
