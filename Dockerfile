@@ -2,7 +2,7 @@
 # Build image
 # ================================
 FROM vapor/swift:5.2 as build
-WORKDIR /build
+WORKDIR /app
 
 # Copy entire repo into container
 COPY . .
@@ -26,9 +26,7 @@ FROM swift:5.2
 WORKDIR /run
 
 # Copy build artifacts
-COPY --from=build /build/.build/release /run
-# Copy environments
-COPY --from=build /build/.run/.env* /run/
+COPY --from=build /app/.build/release /run
 
 ENTRYPOINT ["./Run"]
 CMD ["serve", "--env", "production", "--hostname", "0.0.0.0"]
