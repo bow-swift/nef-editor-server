@@ -110,15 +110,6 @@
         }
       },
       {
-        "package": "OpenSSL",
-        "repositoryURL": "https://github.com/IBM-Swift/OpenSSL.git",
-        "state": {
-          "branch": null,
-          "revision": "6c7e2e3610037fbc05c0d846cec981518961d8bf",
-          "version": "2.2.2"
-        }
-      },
-      {
         "package": "Quick",
         "repositoryURL": "https://github.com/Quick/Quick.git",
         "state": {
@@ -143,6 +134,15 @@
           "branch": null,
           "revision": "002d325b0bdee94e7882e1114af5ff4fe1e96afa",
           "version": "5.1.1"
+        }
+      },
+      {
+        "package": "swift-argument-parser",
+        "repositoryURL": "https://github.com/apple/swift-argument-parser",
+        "state": {
+          "branch": null,
+          "revision": "9f04d1ff1afbccd02279338a2c91e5f27c45e93a",
+          "version": "0.0.5"
         }
       },
       {
