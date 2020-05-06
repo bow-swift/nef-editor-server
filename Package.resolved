@@ -47,6 +47,15 @@
         }
       },
       {
+        "package": "Bow",
+        "repositoryURL": "https://github.com/bow-swift/bow.git",
+        "state": {
+          "branch": "master",
+          "revision": "c1aca2027e273953e167c082b3ffa9226dedbfe2",
+          "version": null
+        }
+      },
+      {
         "package": "console-kit",
         "repositoryURL": "https://github.com/vapor/console-kit.git",
         "state": {
@@ -86,9 +95,27 @@
         "package": "nef",
         "repositoryURL": "https://github.com/bow-swift/nef.git",
         "state": {
-          "branch": "develop",
-          "revision": "f21daf611f9b19ce48faf328e21a12e35694e70d",
+          "branch": null,
+          "revision": "194a2fde700c85981b8494110d784cbddf678e87",
           "version": null
+        }
+      },
+      {
+        "package": "Nimble",
+        "repositoryURL": "https://github.com/Quick/Nimble.git",
+        "state": {
+          "branch": null,
+          "revision": "7fd118ec8795888bcbbebc1a41f6984454c4cd6f",
+          "version": "8.0.7"
+        }
+      },
+      {
+        "package": "Quick",
+        "repositoryURL": "https://github.com/Quick/Quick.git",
+        "state": {
+          "branch": null,
+          "revision": "33682c2f6230c60614861dfc61df267e11a1602f",
+          "version": "2.2.0"
         }
       },
       {
@@ -107,6 +134,15 @@
           "branch": null,
           "revision": "002d325b0bdee94e7882e1114af5ff4fe1e96afa",
           "version": "5.1.1"
+        }
+      },
+      {
+        "package": "swift-argument-parser",
+        "repositoryURL": "https://github.com/apple/swift-argument-parser",
+        "state": {
+          "branch": null,
+          "revision": "9f04d1ff1afbccd02279338a2c91e5f27c45e93a",
+          "version": "0.0.5"
         }
       },
       {
@@ -201,11 +237,11 @@
       },
       {
         "package": "Swiftline",
-        "repositoryURL": "https://github.com/bow-swift/Swiftline",
+        "repositoryURL": "https://github.com/bow-swift/Swiftline.git",
         "state": {
           "branch": null,
-          "revision": "f8920ed12233e6c0041213ed0befc1ff7e5e26bf",
-          "version": "0.5.4"
+          "revision": "73ac7c207b617cf0fbc8d29637acc6b9933a52c0",
+          "version": "0.5.5"
         }
       },
       {

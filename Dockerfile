@@ -1,11 +1,17 @@
 # ================================
 # Build image
 # ================================
-FROM vapor/swift:5.2 as build
-WORKDIR /build
+FROM vapor/swift:5.2.2 as build
+WORKDIR /app
 
 # Copy entire repo into container
 COPY . .
+
+# Add dependencies to image
+RUN apt-get update && apt-get install -y \
+    openssl \
+		libssl-dev \
+		zlib1g
 
 # Compile with optimizations
 RUN swift build \
@@ -16,15 +22,11 @@ RUN swift build \
 # ================================
 # Run image
 # ================================
-FROM vapor/ubuntu:18.04
+FROM swift:5.2.2
 WORKDIR /run
 
 # Copy build artifacts
-COPY --from=build /build/.build/release /run
-# Copy Swift runtime libraries
-COPY --from=build /usr/lib/swift/ /usr/lib/swift/
-# Uncomment the next line if you need to load resources from the `Public` directory
-#COPY --from=build /build/Public /run/Public
+COPY --from=build /app/.build/release /run
 
 ENTRYPOINT ["./Run"]
 CMD ["serve", "--env", "production", "--hostname", "0.0.0.0"]

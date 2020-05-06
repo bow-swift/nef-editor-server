@@ -1,0 +1,20 @@
+## Build files
+Dockerfile
+Packages/
+Package.pins
+Package.resolved
+*.xcodeproj
+.swiftpm
+.build
+
+## User settings
+xcuserdata/
+.DS_Store
+
+## Vapor
+.env.*
+.run
+
+## Linux auto-generated tests
+**/LinuxMain.swift
+**/XCTestManifests.swift

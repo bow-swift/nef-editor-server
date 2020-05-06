@@ -13,9 +13,9 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/vapor/vapor.git", .exact("4.3.1")),
         .package(url: "https://github.com/vapor/jwt-kit.git", from: "4.0.0-rc.1.4"),
-        .package(name: "SwiftJWT", url: "https://github.com/IBM-Swift/Swift-JWT.git", from: "3.6.1"),
-        .package(url: "https://github.com/weichsel/ZIPFoundation.git", from: "0.9.0"),
-        .package(url: "https://github.com/bow-swift/nef.git", .branch("develop")),
+        .package(name: "SwiftJWT", url: "https://github.com/IBM-Swift/Swift-JWT.git", .exact("3.6.1")),
+        .package(url: "https://github.com/weichsel/ZIPFoundation.git", .exact("0.9.11")),
+        .package(url: "https://github.com/bow-swift/nef.git", .exact("0.6.1")),
         .package(path: "./Sources/Clients/AppleSignIn"),
     ],
     targets: [
