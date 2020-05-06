@@ -13,9 +13,10 @@ macos: bow-openapi-macos dependencies
 xcode: dependencies
 		vapor xcode -n
 
-.PHONY: install
+.PHONY: dependencies
 dependencies:
-		bow-openapi --name AppleSignIn --schema Sources/Clients/AppleSignIn.yaml --output Sources/Clients/AppleSignIn
+		@rm -rf ./Sources/Clients/AppleSignIn
+		bow-openapi --name AppleSignIn --schema ./Sources/Clients/AppleSignIn.yaml --output ./Sources/Clients/AppleSignIn --verbose
 
 .PHONY: bow-openapi-macos
 bow-openapi-macos:
@@ -27,6 +28,5 @@ bow-openapi-linux:
 		curl -s https://api.github.com/repos/bow-swift/bow-openapi/releases/latest \
 		| grep -oP '"tag_name": "\K(.*)(?=")' \
 		| xargs -I {} wget -O - https://github.com/bow-swift/bow-openapi/archive/{}.tar.gz \
-		| tar xz \
-		| cd bow-openapi-* \
-		| sudo make linux
+		| tar xz
+		cd bow-openapi-*; make linux; cd ..

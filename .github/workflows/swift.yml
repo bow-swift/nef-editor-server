@@ -43,5 +43,5 @@ jobs:
         failOnError: false
     - name: Run tests
       run: |
-        make linux
+        sudo make linux
         swift test
