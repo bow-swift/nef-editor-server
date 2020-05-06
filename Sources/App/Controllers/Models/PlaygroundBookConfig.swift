@@ -1,5 +1,7 @@
 import Foundation
+import BowEffects
 import nef
+import NefEditorData
 
 struct PlaygroundBookConfig: HasWebSocketOutput, HasCommandCodable {
     let outputDirectory: URL
@@ -15,5 +17,19 @@ struct PlaygroundBookConfig: HasWebSocketOutput, HasCommandCodable {
         self.commandDecoder = decoder
         self.fileManager = fileManager
         self.console = PlaygroundBookConsole(webSocket: webSocket, encoder: encoder)
+    }
+}
+
+
+typealias PlaygroundBookResource = IOResource<PlaygroundBookError, URL>
+
+extension PlaygroundBookConfig {
+    var resource: PlaygroundBookResource {
+        PlaygroundBookResource.from(acquire: {
+            let output = self.outputDirectory.appendingPathComponent(UUID().uuidString)
+            return .pure(output)
+        }, release: { url, _ in
+            self.fileManager.removeItemIO(at: url).ignoreError()
+        })
     }
 }

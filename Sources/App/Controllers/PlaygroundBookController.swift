@@ -1,4 +1,6 @@
 import Vapor
+import Bow
+import BowEffects
 
 final class PlaygroundBookController {
     private let playgroundBook: PlaygroundBook
@@ -14,8 +16,7 @@ final class PlaygroundBookController {
         
         webSocket.onText { socket, text in
             _ = self.playgroundBook.build(command: text)
-                .provide(self.config(socket))
-                .unsafeRunSyncEither(on: queue)
+                .unsafeRunSyncEither(with: self.config(socket), on: queue)
         }
     }
 }
