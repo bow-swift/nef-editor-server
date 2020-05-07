@@ -50,9 +50,9 @@
         "package": "Bow",
         "repositoryURL": "https://github.com/bow-swift/bow.git",
         "state": {
-          "branch": "master",
-          "revision": "c1aca2027e273953e167c082b3ffa9226dedbfe2",
-          "version": null
+          "branch": null,
+          "revision": "17ff76f1e0427a67e221c0a20b96324d256c340f",
+          "version": "0.8.0"
         }
       },
       {
@@ -96,8 +96,8 @@
         "repositoryURL": "https://github.com/bow-swift/nef.git",
         "state": {
           "branch": null,
-          "revision": "194a2fde700c85981b8494110d784cbddf678e87",
-          "version": null
+          "revision": "b65e1a3281435460a2ead00482343b0a1860615b",
+          "version": "0.6.1"
         }
       },
       {
@@ -240,7 +240,7 @@
         "repositoryURL": "https://github.com/bow-swift/Swiftline.git",
         "state": {
           "branch": null,
-          "revision": "73ac7c207b617cf0fbc8d29637acc6b9933a52c0",
+          "revision": "541096a44678aeb42aa53ff48a9fbd714fd9b126",
           "version": "0.5.5"
         }
       },

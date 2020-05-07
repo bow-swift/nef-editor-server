@@ -28,5 +28,5 @@ bow-openapi-linux:
 		curl -s https://api.github.com/repos/bow-swift/bow-openapi/releases/latest \
 		| grep -oP '"tag_name": "\K(.*)(?=")' \
 		| xargs -I {} wget -O - https://github.com/bow-swift/bow-openapi/archive/{}.tar.gz \
-		| tar xz
-		cd bow-openapi-*; make linux; cd ..
+		| tar xz \
+		&& make linux -C bow-openapi-*

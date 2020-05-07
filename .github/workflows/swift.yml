@@ -6,7 +6,6 @@ jobs:
   macos:
     name: macos
     runs-on: macos-latest
-
     steps:
     - uses: actions/checkout@v2
     - name: Switch Xcode version
@@ -15,33 +14,13 @@ jobs:
       run: |
         make macos
         swift test
-    - name: Generate linux tests
-      run: |
-        swift test --generate-linuxmain
-        rm -rf .build
-    - name: Cached auto-generate linux tests
-      uses: actions/upload-artifact@v1
-      with:
-        name: generate-linuxmain
-        path: .
 
   linux:
     name: linux
-    needs: macos
     runs-on: ubuntu-latest
-
     steps:
-    - name: Get auto-generate linux tests
-      uses: actions/download-artifact@v1
-      with:
-        name: generate-linuxmain
-        path: .
-    - name: Remove generated artifact
-      uses: geekyeggo/delete-artifact@v1
-      with:
-        name: generate-linuxmain
-        failOnError: false
+    - uses: actions/checkout@v2
     - name: Run tests
       run: |
         sudo make linux
-        swift test
+        sudo swift test
