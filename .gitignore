@@ -34,7 +34,3 @@ Package.resolved
 ## Vapor
 .env.*
 .run
-
-## Linux
-**/LinuxMain.swift
-**/XCTestManifests.swift

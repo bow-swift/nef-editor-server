@@ -8,9 +8,9 @@ import NefEditorUtils
 
 final class PlaygroundBookServer: PlaygroundBook {
     
-    func build(command text: String) -> EnvIO<PlaygroundBookConfig, PlaygroundBookCommandError, PlaygroundBookGenerated> {
-        let command = EnvIO<PlaygroundBookConfig, PlaygroundBookCommandError, PlaygroundBookCommand.Incoming>.var()
-        let output = EnvIO<PlaygroundBookConfig, PlaygroundBookCommandError, PlaygroundBookGenerated>.var()
+    func build(command text: String) -> EnvIO<PlaygroundBookConfig, PlaygroundBookError, PlaygroundBookGenerated> {
+        let command = EnvIO<PlaygroundBookConfig, PlaygroundBookError, PlaygroundBookCommand.Incoming>.var()
+        let output = EnvIO<PlaygroundBookConfig, PlaygroundBookError, PlaygroundBookGenerated>.var()
         
         return binding(
             command <- self.getCommand(text: text),
@@ -18,54 +18,60 @@ final class PlaygroundBookServer: PlaygroundBook {
         yield: output.get)^.report()
     }
     
-    private func getCommand(text: String) -> EnvIO<PlaygroundBookConfig, PlaygroundBookCommandError, PlaygroundBookCommand.Incoming> {
+    private func getCommand(text: String) -> EnvIO<PlaygroundBookConfig, PlaygroundBookError, PlaygroundBookCommand.Incoming> {
         guard let data = text.data(using: .utf8) else {
-            return EnvIO.raiseError(PlaygroundBookCommandError(description: "Unsupported message: \(text)", code: "404"))^
+            return .raiseError(PlaygroundBookError.commandCodification)^
         }
             
-        let env = EnvIO<PlaygroundBookConfig, PlaygroundBookCommandError, PlaygroundBookConfig>.var()
-        let command = EnvIO<PlaygroundBookConfig, PlaygroundBookCommandError, PlaygroundBookCommand.Incoming>.var()
+        let env = EnvIO<PlaygroundBookConfig, PlaygroundBookError, PlaygroundBookConfig>.var()
+        let command = EnvIO<PlaygroundBookConfig, PlaygroundBookError, PlaygroundBookCommand.Incoming>.var()
         
         return binding(
             env <- .ask(),
             command <- env.get.commandDecoder
                               .safeDecode(PlaygroundBookCommand.Incoming.self, from: data)
-                              .mapError { e in .init(description: "\(e)", code: "404") },
+                              .mapError { e in .invalidCommand(e) },
         yield: command.get)^
     }
     
-    private func buildPlaygroundBook(command: PlaygroundBookCommand.Incoming) -> EnvIO<PlaygroundBookConfig, PlaygroundBookCommandError, PlaygroundBookGenerated> {
+    private func buildPlaygroundBook(command: PlaygroundBookCommand.Incoming) -> EnvIO<PlaygroundBookConfig, PlaygroundBookError, PlaygroundBookGenerated> {
         switch command {
         case .recipe(let recipe):
             return buildPlaygroundBook(recipe)
         case .unsupported:
-            return EnvIO.raiseError(.init(description: "Unsupported command: \(command)", code: "404"))^
+            return .raiseError(PlaygroundBookError.unsupportedCommand)^
         }
     }
     
-    private func buildPlaygroundBook(_ recipe: PlaygroundRecipe) -> EnvIO<PlaygroundBookConfig, PlaygroundBookCommandError, PlaygroundBookGenerated> {
+    private func buildPlaygroundBook(_ recipe: PlaygroundRecipe) -> EnvIO<PlaygroundBookConfig, PlaygroundBookError, PlaygroundBookGenerated> {
         buildPlaygroundBook(recipe)
             .map { data in PlaygroundBookGenerated(name: recipe.name, zip: data) }^
     }
     
-    private func buildPlaygroundBook(_ recipe: PlaygroundRecipe) -> EnvIO<PlaygroundBookConfig, PlaygroundBookCommandError, URL> {
-        EnvIO { env in
-            let package = recipe.swiftPackage
-            let render = nef.SwiftPlayground.render(packageContent: package.content,
-                                                    name: package.name,
-                                                    output: env.outputDirectory)
-            
-            return render.provide(env.console)
-                .mapError { e in .init(description: "\(e)", code: "500") }^
-        }
+    private func buildPlaygroundBook(_ recipe: PlaygroundRecipe, at url: URL) -> EnvIO<PlaygroundBookConfig, PlaygroundBookError, URL> {
+        let package = recipe.swiftPackage
+        let render = nef.SwiftPlayground.render(packageContent: package.content,
+                                                name: package.name,
+                                                output: url)
+        
+        return render
+            .contramap { env in env.console }
+            .mapError { e in .renderRecipe(e) }^
     }
     
-    private func buildPlaygroundBook(_ recipe: PlaygroundRecipe) -> EnvIO<PlaygroundBookConfig, PlaygroundBookCommandError, Data> {
-        buildPlaygroundBook(recipe)
-            .flatMap { url in
-                url.zipIO(name: recipe.name)
-                    .mapError { e in .init(description: e.localizedDescription, code: "500") }
-                    .contramap(\.fileManager)
-            }^
+    private func buildPlaygroundBook(_ recipe: PlaygroundRecipe) -> EnvIO<PlaygroundBookConfig, PlaygroundBookError, Data> {
+        func zipItem(_ url: URL) -> EnvIO<PlaygroundBookConfig, PlaygroundBookError, Data> {
+            url.zipIO(name: recipe.name)
+                .mapError { e in .zipRecipe(e) }
+                .contramap(\.fileManager)
+        }
+        
+        return EnvIO { env in
+            env.resource.use { url in
+                self.buildPlaygroundBook(recipe, at: url)
+                    .flatMap(zipItem)^
+                    .provide(env)
+            }
+        }
     }
 }
