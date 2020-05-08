@@ -16,7 +16,7 @@ xcode: dependencies
 .PHONY: dependencies
 dependencies:
 		@rm -rf ./Sources/Clients/AppleSignIn
-		bow-openapi --name AppleSignIn --schema ./Sources/Clients/AppleSignIn.yaml --output ./Sources/Clients/AppleSignIn --verbose
+		bow-openapi --name AppleSignIn --schema ./Sources/Clients/AppleSignIn.yaml --output ./Sources/Clients --verbose
 
 .PHONY: bow-openapi-macos
 bow-openapi-macos:
