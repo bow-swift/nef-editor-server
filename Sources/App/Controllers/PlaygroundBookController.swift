@@ -20,3 +20,8 @@ final class PlaygroundBookController {
         }
     }
 }
+
+extension PlaygroundBookConfig: AbortError {
+    var status: HTTPResponseStatus { .internalServerError }
+    var reason: String { "\(self)" }
+}

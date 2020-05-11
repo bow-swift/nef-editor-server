@@ -14,7 +14,7 @@ final class AppleSignInController {
     
     func handle(request: Request) throws -> String {
         let queue: DispatchQueue = .init(label: String(describing: AppleSignInController.self), qos: .userInitiated)
-
+        
         return try run(request: request)
             .provide(config)
             .unsafeRunSync(on: queue)
@@ -55,4 +55,10 @@ final class AppleSignInController {
                 }^
         }^
     }
+}
+
+
+extension SignInError: AbortError {
+    var status: HTTPResponseStatus { .internalServerError }
+    var reason: String { "\(self)" }
 }

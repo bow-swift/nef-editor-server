@@ -1,5 +1,6 @@
 ## Build files
 Dockerfile
+app.yaml
 Packages/
 Package.pins
 Package.resolved
