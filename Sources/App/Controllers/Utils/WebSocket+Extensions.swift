@@ -9,7 +9,7 @@ extension WebSocket: WebSocketOutput {
     func send<D>(binary: Data) -> EnvIO<D, WebSocketError, Void> {
         EnvIO.invoke { _ in
             guard let message = String(data: binary, encoding: .utf8) else {
-                throw WebSocketError.encodingUTF8
+                throw WebSocketError.utf8Expected
             }
             
             self.send(message)

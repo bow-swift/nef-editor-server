@@ -4,6 +4,10 @@ import AppleSignIn
 struct RouteRegister {
     let app: Application
     
+    func healthCheck() throws {
+        app.get("health_check") { _ in "OK!" }
+    }
+    
     func playgroundBook() throws {
         let controller = PlaygroundBookController(playgroundBook: PlaygroundBookServer(), config: config)
         let bearerAuth = try BearerAuthorizationMiddleware(authorization: AuthorizationServer(), environment: bearerEnvironment())
