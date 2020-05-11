@@ -34,3 +34,6 @@ Package.resolved
 ## Vapor
 .env.*
 .run
+
+## Google Cloud
+app.yaml
