@@ -1,4 +1,4 @@
-import Vapor
+import Foundation
 import Bow
 import BowEffects
 

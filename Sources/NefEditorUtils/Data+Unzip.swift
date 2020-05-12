@@ -14,6 +14,7 @@ public extension Data {
             try self.write(to: sourceURL)
             try fileManager.createDirectory(at: destinationURL, withIntermediateDirectories: true, attributes: nil)
             try fileManager.unzipItem(at: sourceURL, to: destinationURL)
+            try fileManager.removeItem(at: sourceURL)
             
             return destinationURL
         }

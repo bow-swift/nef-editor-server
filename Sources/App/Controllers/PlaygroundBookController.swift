@@ -43,31 +43,6 @@ final class PlaygroundBookController {
         yield: encoded.get)^
     }
     
-    private func getCommand(text: String) -> EnvIO<PlaygroundBookSocketConfig, PlaygroundBookError, PlaygroundBookCommand.Incoming> {
-        guard let data = text.data(using: .utf8) else {
-            return .raiseError(PlaygroundBookError.commandCodification)^
-        }
-            
-        let env = EnvIO<PlaygroundBookSocketConfig, PlaygroundBookError, PlaygroundBookSocketConfig>.var()
-        let command = EnvIO<PlaygroundBookSocketConfig, PlaygroundBookError, PlaygroundBookCommand.Incoming>.var()
-        
-        return binding(
-            env <- .ask(),
-            command <- env.get.commandDecoder
-                              .safeDecode(PlaygroundBookCommand.Incoming.self, from: data)
-                              .mapError(PlaygroundBookError.invalidCommand),
-        yield: command.get)^
-    }
-    
-    private func buildPlaygroundBook(command: PlaygroundBookCommand.Incoming) -> EnvIO<PlaygroundBookSocketConfig, PlaygroundBookError, PlaygroundRecipe> {
-        switch command {
-        case .recipe(let recipe):
-            return .pure(recipe)^
-        case .unsupported:
-            return .raiseError(PlaygroundBookError.unsupportedCommand)^
-        }
-    }
-    
     private func decodeRequest(body: Request.Body) -> EnvIO<PlaygroundBookConfig, PlaygroundBookError, PlaygroundRecipe> {
         EnvIO.accessM { env in
             guard let data = body.string?.data(using: .utf8) else {

@@ -5,6 +5,8 @@ import nef
 
 
 // MARK: - PlaygroundBookConfig
+typealias PlaygroundBookResource = IOResource<PlaygroundBookError, URL>
+
 struct PlaygroundBookConfig: AutoLens {
     let outputDirectory: URL
     let requestDecoder: Decoder
@@ -20,8 +22,6 @@ struct PlaygroundBookConfig: AutoLens {
         self.progressReport = progressReport
     }
 }
-
-typealias PlaygroundBookResource = IOResource<PlaygroundBookError, URL>
 
 extension PlaygroundBookConfig {
     var resource: PlaygroundBookResource {
@@ -54,7 +54,7 @@ struct PlaygroundBookSocketConfig: HasWebSocketOutput, HasCommandCodable {
 
 
 // MARK: - Helpers
-struct EmptyProgressReport: ProgressReport {
+private struct EmptyProgressReport: ProgressReport {
     func notify<E: Swift.Error, A: CustomProgressDescription>(_ event: ProgressEvent<A>) -> IO<E, Void> {
         .pure(())^
     }
