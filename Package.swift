@@ -5,6 +5,7 @@ let package = Package(
     name: "nef-editor-server",
     platforms: [
         .macOS(.v10_15),
+        .iOS(.v10)
     ],
     products: [
         .library(name: "NefEditorData", targets: ["NefEditorData"]),
@@ -16,13 +17,15 @@ let package = Package(
         .package(name: "SwiftJWT", url: "https://github.com/IBM-Swift/Swift-JWT.git", .exact("3.6.1")),
         .package(url: "https://github.com/weichsel/ZIPFoundation.git", .exact("0.9.11")),
         .package(url: "https://github.com/bow-swift/nef.git", .branch("develop")),
+        .package(name: "Bow", url: "https://github.com/bow-swift/bow.git", .branch("master")),
         .package(path: "./Sources/Clients/AppleSignIn"),
     ],
     targets: [
         .target(name: "NefEditorData"),
         .target(name: "NefEditorUtils", dependencies: [
+            .product(name: "Bow", package: "Bow"),
+            .product(name: "BowEffects", package: "Bow"),
             .product(name: "ZIPFoundation", package: "ZIPFoundation"),
-            .product(name: "nef", package: "nef"),
         ]),
         .target(name: "App", dependencies: [
             .target(name: "NefEditorData"),
