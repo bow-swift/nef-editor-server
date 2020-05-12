@@ -7,4 +7,5 @@ enum PlaygroundBookError: Error {
     case renderRecipe(Error)
     case zipRecipe(Error)
     case sending(Error)
+    case invalidCodification(Error)
 }

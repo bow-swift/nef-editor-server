@@ -9,12 +9,18 @@ struct RouteRegister {
     }
     
     func playgroundBook() throws {
-        let controller = PlaygroundBookController(playgroundBook: PlaygroundBookServer(), config: config)
+        let output = URL(fileURLWithPath: NSTemporaryDirectory())
+        let config = PlaygroundBookConfig(outputDirectory: output, requestDecoder: JSONDecoder(), responseEncoder: JSONEncoder())
+        let controller = PlaygroundBookController(playgroundBook: PlaygroundBookServer(), config: config, socketConfig: socketConfig)
         let bearerAuth = try BearerAuthorizationMiddleware(authorization: AuthorizationServer(), environment: bearerEnvironment())
         
         app.grouped(bearerAuth)
            .grouped(Bearer.guardMiddleware())
-           .webSocket("playgroundBook", onUpgrade: controller.handler)
+           .webSocket("playgroundBook", onUpgrade: controller.handle)
+        
+        app.grouped(bearerAuth)
+           .grouped(Bearer.guardMiddleware())
+           .post("playgroundBook", use: controller.handle)
     }
     
     func appleSignIn() throws {
@@ -60,13 +66,6 @@ struct RouteRegister {
 
 
 // MARK: Builders
-private func config(webSocket: WebSocketOutput) -> PlaygroundBookConfig {
-    let output = URL(fileURLWithPath: NSTemporaryDirectory())
-    let encoder = JSONEncoder()
-    let decoder = JSONDecoder()
-    
-    return PlaygroundBookConfig(outputDirectory: output,
-                                encoder: encoder,
-                                decoder: decoder,
-                                webSocket: webSocket)
+private func socketConfig(config: PlaygroundBookConfig, webSocket: WebSocketOutput) -> PlaygroundBookSocketConfig {
+    .init(config: config, encoder: JSONEncoder(), decoder: JSONDecoder(), webSocket: webSocket)
 }

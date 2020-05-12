@@ -1,25 +1,25 @@
 import Foundation
 import BowEffects
+import BowOptics
 import nef
-import NefEditorData
 
-struct PlaygroundBookConfig: HasWebSocketOutput, HasCommandCodable {
+
+// MARK: - PlaygroundBookConfig
+struct PlaygroundBookConfig: AutoLens {
     let outputDirectory: URL
-    let commandDecoder: Decoder
-    let console: PlaygroundBookConsole
+    let requestDecoder: Decoder
+    let responseEncoder: Encoder
     let fileManager: FileManager
+    var progressReport: nef.ProgressReport
     
-    var webSocket: WebSocketOutput { self.console.webSocket }
-    var commandEncoder: Encoder { self.console.commandEncoder }
-    
-    init(outputDirectory: URL, encoder: Encoder, decoder: Decoder, webSocket: WebSocketOutput, fileManager: FileManager = .default) {
+    init(outputDirectory: URL, requestDecoder: Decoder, responseEncoder: Encoder, progressReport: nef.ProgressReport = EmptyProgressReport(), fileManager: FileManager = .default) {
         self.outputDirectory = outputDirectory
-        self.commandDecoder = decoder
+        self.requestDecoder = requestDecoder
+        self.responseEncoder = responseEncoder
         self.fileManager = fileManager
-        self.console = PlaygroundBookConsole(webSocket: webSocket, encoder: encoder)
+        self.progressReport = progressReport
     }
 }
-
 
 typealias PlaygroundBookResource = IOResource<PlaygroundBookError, URL>
 
@@ -31,5 +31,31 @@ extension PlaygroundBookConfig {
         }, release: { url, _ in
             self.fileManager.removeItemIO(at: url).ignoreError()
         })
+    }
+}
+
+
+// MARK: - PlaygroundBookConfig for WebSockets
+struct PlaygroundBookSocketConfig: HasWebSocketOutput, HasCommandCodable {
+    let config: PlaygroundBookConfig
+    let webSocket: WebSocketOutput
+    let commandEncoder: Encoder
+    let commandDecoder: Decoder
+    
+    init(config: PlaygroundBookConfig, encoder: Encoder, decoder: Decoder, webSocket: WebSocketOutput) {
+        let console = PlaygroundBookConsole(webSocket: webSocket, encoder: encoder)
+        
+        self.config = PlaygroundBookConfig.lens(for: \.progressReport).set(config, console)
+        self.webSocket = console.webSocket
+        self.commandEncoder = console.commandEncoder
+        self.commandDecoder = decoder
+    }
+}
+
+
+// MARK: - Helpers
+struct EmptyProgressReport: ProgressReport {
+    func notify<E: Swift.Error, A: CustomProgressDescription>(_ event: ProgressEvent<A>) -> IO<E, Void> {
+        .pure(())^
     }
 }

@@ -6,11 +6,11 @@ import AppleSignIn
 
 final class AppleSignInClient: SignInClient {
     
-    func signIn(_ request: AppleSignInRequest) -> EnvIO<AppleSignInClientConfig, SignInError, AppleSignInResponse> {
-        let applePayload = EnvIO<AppleSignInClientConfig, SignInError, ApplePayload>.var()
-        let verifiedPayload = EnvIO<AppleSignInClientConfig, SignInError, ApplePayload>.var()
-        let appleToken = EnvIO<AppleSignInClientConfig, SignInError, AppleSignInTokenResponse>.var()
-        let bearer = EnvIO<AppleSignInClientConfig, SignInError, String>.var()
+    func signIn(_ request: AppleSignInRequest) -> EnvIO<SignInConfig, SignInError, AppleSignInResponse> {
+        let applePayload = EnvIO<SignInConfig, SignInError, ApplePayload>.var()
+        let verifiedPayload = EnvIO<SignInConfig, SignInError, ApplePayload>.var()
+        let appleToken = EnvIO<SignInConfig, SignInError, AppleSignInTokenResponse>.var()
+        let bearer = EnvIO<SignInConfig, SignInError, String>.var()
         
         return binding(
              applePayload <- self.getPayload(identityToken: request.identityToken),
@@ -21,9 +21,9 @@ final class AppleSignInClient: SignInClient {
     }
     
     // MARK: - JWT
-    private func getPayload(identityToken jwt: String) -> EnvIO<AppleSignInClientConfig, SignInError, ApplePayload> {
-        let jwks = EnvIO<AppleSignInClientConfig, SignInError, JWKSet>.var()
-        let payload = EnvIO<AppleSignInClientConfig, SignInError, ApplePayload>.var()
+    private func getPayload(identityToken jwt: String) -> EnvIO<SignInConfig, SignInError, ApplePayload> {
+        let jwks = EnvIO<SignInConfig, SignInError, JWKSet>.var()
+        let payload = EnvIO<SignInConfig, SignInError, ApplePayload>.var()
         
         return binding(
                jwks <- self.getAppleKeys(),
@@ -31,20 +31,20 @@ final class AppleSignInClient: SignInClient {
         yield: payload.get)^
     }
     
-    private func getPayload(identityToken: String, jwks: JWKSet) -> EnvIO<AppleSignInClientConfig, SignInError, ApplePayload> {
+    private func getPayload(identityToken: String, jwks: JWKSet) -> EnvIO<SignInConfig, SignInError, ApplePayload> {
         EnvIO.invokeResult { _ in
             let signers = jwks.keys.compactMap { key in key.appleSigner }
             return signers.jwtSigners.verifiedPayload(jwt: identityToken)
-        }^.mapError { e in .jwt(e) }^
+        }.mapError(SignInError.jwt)
     }
     
-    private func getAppleKeys() -> EnvIO<AppleSignInClientConfig, SignInError, JWKSet> {
+    private func getAppleKeys() -> EnvIO<SignInConfig, SignInError, JWKSet> {
         AppleSignIn.API.default.getKeys()
             .contramap(\.apiConfig)
             .mapError { e in .jwt(.appleKeysNotFound) }
     }
     
-    private func verify(payload: ApplePayload) -> EnvIO<AppleSignInClientConfig, SignInError, ApplePayload> {
+    private func verify(payload: ApplePayload) -> EnvIO<SignInConfig, SignInError, ApplePayload> {
         EnvIO.invoke { env in
             guard payload.issuer == env.environment.signIn.issuer else {
                 throw JWTError.invalidIssuer
@@ -59,29 +59,29 @@ final class AppleSignInClient: SignInClient {
             }
             
             return payload
-        }.mapError { e in .jwt(e) }^
+        }.mapError(SignInError.jwt)
     }
     
     // MARK: - Generate and validate tokens with Apple
-    private func generateAppleToken(code: String) -> EnvIO<AppleSignInClientConfig, SignInError, AppleSignInTokenResponse> {
-        let secret = EnvIO<AppleSignInClientConfig, AppleTokenError, String>.var()
-        let token = EnvIO<AppleSignInClientConfig, AppleTokenError, AppleSignInTokenResponse>.var()
+    private func generateAppleToken(code: String) -> EnvIO<SignInConfig, SignInError, AppleSignInTokenResponse> {
+        let secret = EnvIO<SignInConfig, AppleTokenError, String>.var()
+        let token = EnvIO<SignInConfig, AppleTokenError, AppleSignInTokenResponse>.var()
         
         return binding(
            secret <- self.clientSecret(),
             token <- self.getToken(clientSecret: secret.get, code: code),
-        yield: token.get)^.mapError { e in .appleToken(e) }
+        yield: token.get)^.mapError(SignInError.appleToken)
     }
     
-    func getToken(clientSecret: String, code: String) -> EnvIO<AppleSignInClientConfig, AppleTokenError, AppleSignInTokenResponse> {
-        func appleSignInTokenError(httpError: API.HTTPError) -> EnvIO<AppleSignInClientConfig, AppleTokenError, AppleSignInTokenResponse> {
+    func getToken(clientSecret: String, code: String) -> EnvIO<SignInConfig, AppleTokenError, AppleSignInTokenResponse> {
+        func appleSignInTokenError(httpError: API.HTTPError) -> EnvIO<SignInConfig, AppleTokenError, AppleSignInTokenResponse> {
             EnvIO.accessM { env in
                 guard let data = httpError.dataError?.data else {
                     return EnvIO.raiseError(.invalidPayload)^
                 }
                 
                 return env.apiConfig.decoder.safeDecode(AppleSignIn.AppleSignInError.self, from: data)
-                    .mapError { error in .response(error) }^
+                    .mapError(AppleTokenError.response)
                     .flatMap  { response in IO.raiseError(.response(response)) }^
                     .env()^
             }
@@ -99,7 +99,7 @@ final class AppleSignInClient: SignInClient {
         }
     }
     
-    private func clientSecret(issuedAt: Date = Date()) -> EnvIO<AppleSignInClientConfig, AppleTokenError, String> {
+    private func clientSecret(issuedAt: Date = Date()) -> EnvIO<SignInConfig, AppleTokenError, String> {
         EnvIO.invokeResult { env in
             let expirationDate = issuedAt.addingTimeInterval(env.environment.bearer.expirationInterval)
             
@@ -115,7 +115,7 @@ final class AppleSignInClient: SignInClient {
     }
     
     // MARK: - Bearer
-    private func generateBearer(tokenResponse: AppleSignInTokenResponse) -> EnvIO<AppleSignInClientConfig, SignInError, String> {
+    private func generateBearer(tokenResponse: AppleSignInTokenResponse) -> EnvIO<SignInConfig, SignInError, String> {
         let payload = EnvIO<BearerEnvironment, BearerError, AppleTokenPayload>.var()
         let bearerPayload = EnvIO<BearerEnvironment, BearerError, BearerPayload>.var()
         let bearer = EnvIO<BearerEnvironment, BearerError, String>.var()
@@ -126,13 +126,13 @@ final class AppleSignInClient: SignInClient {
                   bearer <- self.generateBearer(payload: bearerPayload.get),
         yield: bearer.get)^
             .contramap(\.environment.bearer)
-            .mapError { e in .bearer(e) }
+            .mapError(SignInError.bearer)
     }
     
     private func payload(tokenResponse: AppleSignInTokenResponse) -> EnvIO<BearerEnvironment, BearerError, AppleTokenPayload> {
         EnvIO.invokeResult { _ in
             AppleTokenPayload.jwtSigners.unverifiedPayload(token: tokenResponse.idToken)
-                .mapError { e in .invalidPayload(e) }
+                .mapError(BearerError.invalidPayload)
         }
     }
     

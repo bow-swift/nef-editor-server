@@ -8,9 +8,9 @@ import NefEditorUtils
 
 final class PlaygroundBookServer: PlaygroundBook {
     
-    func build(command text: String) -> EnvIO<PlaygroundBookConfig, PlaygroundBookError, PlaygroundBookGenerated> {
-        let command = EnvIO<PlaygroundBookConfig, PlaygroundBookError, PlaygroundBookCommand.Incoming>.var()
-        let output = EnvIO<PlaygroundBookConfig, PlaygroundBookError, PlaygroundBookGenerated>.var()
+    func build(command text: String) -> EnvIO<PlaygroundBookSocketConfig, PlaygroundBookError, PlaygroundBookGenerated> {
+        let command = EnvIO<PlaygroundBookSocketConfig, PlaygroundBookError, PlaygroundBookCommand.Incoming>.var()
+        let output = EnvIO<PlaygroundBookSocketConfig, PlaygroundBookError, PlaygroundBookGenerated>.var()
         
         return binding(
             command <- self.getCommand(text: text),
@@ -18,13 +18,19 @@ final class PlaygroundBookServer: PlaygroundBook {
         yield: output.get)^.report()
     }
     
-    private func getCommand(text: String) -> EnvIO<PlaygroundBookConfig, PlaygroundBookError, PlaygroundBookCommand.Incoming> {
+    func build(recipe: PlaygroundRecipe) -> EnvIO<PlaygroundBookConfig, PlaygroundBookError, PlaygroundBookGenerated> {
+        buildPlaygroundBook(recipe)
+            .map { data in PlaygroundBookGenerated(name: recipe.name, zip: data) }^
+    }
+    
+    // MARK: - Build nef Playground <command>
+    private func getCommand(text: String) -> EnvIO<PlaygroundBookSocketConfig, PlaygroundBookError, PlaygroundBookCommand.Incoming> {
         guard let data = text.data(using: .utf8) else {
             return .raiseError(PlaygroundBookError.commandCodification)^
         }
             
-        let env = EnvIO<PlaygroundBookConfig, PlaygroundBookError, PlaygroundBookConfig>.var()
-        let command = EnvIO<PlaygroundBookConfig, PlaygroundBookError, PlaygroundBookCommand.Incoming>.var()
+        let env = EnvIO<PlaygroundBookSocketConfig, PlaygroundBookError, PlaygroundBookSocketConfig>.var()
+        let command = EnvIO<PlaygroundBookSocketConfig, PlaygroundBookError, PlaygroundBookCommand.Incoming>.var()
         
         return binding(
             env <- .ask(),
@@ -34,20 +40,16 @@ final class PlaygroundBookServer: PlaygroundBook {
         yield: command.get)^
     }
     
-    private func buildPlaygroundBook(command: PlaygroundBookCommand.Incoming) -> EnvIO<PlaygroundBookConfig, PlaygroundBookError, PlaygroundBookGenerated> {
+    private func buildPlaygroundBook(command: PlaygroundBookCommand.Incoming) -> EnvIO<PlaygroundBookSocketConfig, PlaygroundBookError, PlaygroundBookGenerated> {
         switch command {
         case .recipe(let recipe):
-            return buildPlaygroundBook(recipe)
+            return build(recipe: recipe).contramap(\.config)
         case .unsupported:
             return .raiseError(PlaygroundBookError.unsupportedCommand)^
         }
     }
     
-    private func buildPlaygroundBook(_ recipe: PlaygroundRecipe) -> EnvIO<PlaygroundBookConfig, PlaygroundBookError, PlaygroundBookGenerated> {
-        buildPlaygroundBook(recipe)
-            .map { data in PlaygroundBookGenerated(name: recipe.name, zip: data) }^
-    }
-    
+    // MARK: - Build nef Playground <recipe>
     private func buildPlaygroundBook(_ recipe: PlaygroundRecipe, at url: URL) -> EnvIO<PlaygroundBookConfig, PlaygroundBookError, URL> {
         let package = recipe.swiftPackage
         let render = nef.SwiftPlayground.render(packageContent: package.content,
@@ -55,7 +57,7 @@ final class PlaygroundBookServer: PlaygroundBook {
                                                 output: url)
         
         return render
-            .contramap { env in env.console }
+            .contramap(\.progressReport)
             .mapError { e in .renderRecipe(e) }^
     }
     
