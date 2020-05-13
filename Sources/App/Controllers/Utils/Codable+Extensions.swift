@@ -1,4 +1,5 @@
 import Foundation
+import Bow
 import BowEffects
 
 /// Make JSONEncoder conform to ResponseEncoder
