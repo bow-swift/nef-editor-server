@@ -15,6 +15,8 @@ It is an awesome project that mixes a lot of technologies to run Swift in backen
 - [**nef**](https://nef.bow-swift.io): a lot of cool features for Playgrounds; it lets us build a **Playground Book** with external dependencies defined in a Swift Package.
 - [**Bow OpenAPI**](https://openapi.bow-swift.io): auto derivate **functional HTTP clients** given an OpenAPI specification. Let us derivate clients for Apple APIs.
 
+&nbsp;
+
 
 ## 🗝 How to Sign-in into nef?
 
@@ -90,3 +92,33 @@ Generates a Playground Book given a recipe.
 - **Body** PlaygroundBookGenerated
 
 > This repo provides `NefEditorData` module in order to keep sync the models for request/response between client and backend.
+
+&nbsp;
+
+
+## ❤️ Contributing to the project
+
+You can contribute in different ways to make `nef editor` better:
+
+- File an issue if you encounter a bug or malfunction.
+- Open a Pull Request fixing a problem or adding new functionality. You can check the [Issues](https://github.com/47deg/nef-editor-server/issues) to see some of the pending tasks.
+- Discuss with us in the [Gitter channel for Bow](https://gitter.im/bowswift/bow) about all the above.
+
+&nbsp;
+
+
+## ⚖️ License
+
+    Copyright (C) 2020 The nef Authors
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
