@@ -36,16 +36,23 @@ Apple announced in 2019 a new feature, "Sign In with Apple" enabling users to si
 3. Using the **authorization code** received from the client, and the **verified JWT**, app server will retrieve user's information from Apple ID servers.
 4. App server uses received user's information to sign-in, and come back to the client, **AppleSignInResponse**.
 
-### Sequence Diagram
 
+<details>
+<summary>📣 Sequence Diagram</summary>
 <p align="center">
     <img src="assets/sign-in.png" alt="Apple sign-on flow" width="80%"/>
 </p>
+</details>
 
 &nbsp;
 
 
 ## ⚙️ How to generate a Playground Book?
+&nbsp;
+
+
+## 📲 How to deploy?
+
 &nbsp;
 
 
@@ -83,10 +90,3 @@ Generates a Playground Book given a recipe.
 - **Body** PlaygroundBookGenerated
 
 > This repo provides `NefEditorData` module in order to keep sync the models for request/response between client and backend.
-
-&nbsp;
-
-
-## 📲 How to deploy?
-
-&nbsp;
