@@ -5,15 +5,19 @@
 <img src="https://img.shields.io/badge/iOS-10%2B-blueviolet" alt="iOS support">
 </p>
 
-Welcome to nef editor!
+Welcome to server-side for nef editor!
 
-It provides the services for [nef client](https://github.com/47deg/nef-editor-client). In the next lines, you will find information about APIs specification, how nef has integrated Apple Sign-in and how do we generate a Playground Book.
+It provides the services for [nef client](https://github.com/47deg/nef-editor-client). In the next lines, you will find information about APIs specification, how nef has integrated Apple Sign-in, and how does it generate a Playground Book.
 
-&nbsp;
+It is an awesome project that mixes a lot of technologies to run Swift in backend.
+- [**Vapor**](https://vapor.codes/): a Web Framework for Swift that works on macOS and **Ubuntu**
+- [**Bow**](https://bow-swift.io/): a cross-platform library for Typed **Functional Programming** in Swift.
+- [**nef**](https://nef.bow-swift.io): a lot of cool features for Playgrounds; it lets us build a **Playground Book** with external dependencies defined in a Swift Package.
+- [**Bow OpenAPI**](https://openapi.bow-swift.io): auto derivate **functional HTTP clients** given an OpenAPI specification. Let us derivate clients for Apple APIs.
 
-## 🔌 APIs
+## APIs
 
-### Sign-in
+### 🔌 Sign-in
 Sign in to nef using their Apple ID. You can consume this service using [Bow OpenAPI](https://openapi.bow-swift.io) and the schema at `NefEditorSchema`.
 
 ##### Request
@@ -30,7 +34,7 @@ Sign in to nef using their Apple ID. You can consume this service using [Bow Ope
 
 &nbsp;
 
-### Generate Playground Book
+### 🔌 Generate Playground Book
 Generates a Playground Book given a recipe.
 
 ##### Request
