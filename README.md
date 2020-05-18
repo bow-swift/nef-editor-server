@@ -1,6 +1,24 @@
 # 🖥  nef editor
 
-## How to Sign-in into nef?
+## 🔌 APIs
+
+### Sign-in
+Sign in to nef using their Apple ID. You can consume this service using [Bow OpenAPI](openapi.bow-swift.io) and the schema at `NefEditorSchema`.
+You can read more about how sign-in works in the [How to Sign-in into nef?](#-how-to-sign-in-into-nef) section.
+
+#### Request
+- **POST** /signin
+- **Accept** application/json
+- **Content-Type** application/json
+- **Body** AppleSignInRequest
+
+#### Response
+- **Content-Type** application/json
+- **Body** AppleSignInResponse
+
+&nbsp;
+
+## 🗝 How to Sign-in into nef?
 
 Apple announced in 2019 a new feature, "Sign In with Apple" enabling users to sign in to apps using their Apple ID. Apple positioned this feature as a fast, secure, and privacy-friendly way for users to set up an account and start using your apps. It sounds like a great solution for our app to enable **authorized services** without having to rely on external identity providers.
 
@@ -20,15 +38,7 @@ Apple announced in 2019 a new feature, "Sign In with Apple" enabling users to si
 3. Using the **authorization code** received from the client, and the **verified JWT**, app server will retrieve user's information from Apple ID servers.
 4. App server uses received user's information to sign-in, and come back to the client, **AppleSignInResponse**.
 
-#### Request
-- **POST** /signin
-- **Accept** application/json
-- **Content-Type** application/json
-- **Body** AppleSignInRequest
-
-#### Response
-- **Content-Type** application/json
-- **Body** AppleSignInResponse
+### Sequence Diagram
 
 <p align="center">
     <img src="assets/sign-in.png" alt="Apple sign-on flow" width="80%"/>
