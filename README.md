@@ -20,6 +20,16 @@ Apple announced in 2019 a new feature, "Sign In with Apple" enabling users to si
 3. Using the **authorization code** received from the client, and the **verified JWT**, app server will retrieve user's information from Apple ID servers.
 4. App server uses received user's information to sign-in, and come back to the client, **AppleSignInResponse**.
 
+#### Request
+- **POST** /signin
+- **Accept** application/json
+- **Content-Type** application/json
+- **Body** AppleSignInRequest
+
+#### Response
+- **Content-Type** application/json
+- **Body** AppleSignInResponse
+
 <p align="center">
     <img src="assets/sign-in.png" alt="Apple sign-on flow" width="80%"/>
 </p>
