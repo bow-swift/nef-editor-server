@@ -1,36 +1,50 @@
-# 🖥  nef editor
+<p align="center">
+<img src="https://github.com/47deg/nef-editor-server/workflows/Compile%20and%20test/badge.svg" alt="Compile and test">
+<img src="https://img.shields.io/badge/Docker-Ubuntu%2018.04-blue" alt="Docker support">
+<img src="https://img.shields.io/badge/macos-10.15%2B-blueviolet" alt="macOS support">
+<img src="https://img.shields.io/badge/iOS-10%2B-blueviolet" alt="iOS support">
+</p>
+
+Welcome to nef editor!
+
+It provides the services for [nef client](https://github.com/47deg/nef-editor-client). In the next lines, you will find information about APIs specification, how nef has integrated Apple Sign-in and how do we generate a Playground Book.
+
+&nbsp;
 
 ## 🔌 APIs
 
 ### Sign-in
 Sign in to nef using their Apple ID. You can consume this service using [Bow OpenAPI](https://openapi.bow-swift.io) and the schema at `NefEditorSchema`.
-> You can read more about how sign-in works in [How to Sign-in into nef?](#-how-to-sign-in-into-nef)
 
-#### Request
+##### Request
 - **POST** /signin
 - **Accept** application/json
 - **Content-Type** application/json
 - **Body** AppleSignInRequest
 
-#### Response
+##### Response
 - **Content-Type** application/json
 - **Body** AppleSignInResponse
 
+> You can read more about how sign-in works in [How to Sign-in into nef?](#-how-to-sign-in-into-nef)
+
+&nbsp;
 
 ### Generate Playground Book
 Generates a Playground Book given a recipe.
-> This repo provides `NefEditorData` module in order to keep sync the models for request/response between client and backend.
 
-#### Request
+##### Request
 - **POST** /playgroundBook
 - **Accept** application/json
 - **Content-Type** application/json
 - **Authorization** Bearer
 - **Body** PlaygroundRecipe
 
-#### Response
+##### Response
 - **Content-Type** application/json
 - **Body** PlaygroundBookGenerated
+
+> This repo provides `NefEditorData` module in order to keep sync the models for request/response between client and backend.
 
 &nbsp;
 
