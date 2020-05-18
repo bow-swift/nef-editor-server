@@ -3,8 +3,8 @@
 ## 🔌 APIs
 
 ### Sign-in
-Sign in to nef using their Apple ID. You can consume this service using [Bow OpenAPI](openapi.bow-swift.io) and the schema at `NefEditorSchema`.
-You can read more about how sign-in works in the [How to Sign-in into nef?](#-how-to-sign-in-into-nef) section.
+Sign in to nef using their Apple ID. You can consume this service using [Bow OpenAPI](https://openapi.bow-swift.io) and the schema at `NefEditorSchema`.
+> You can read more about how sign-in works in [How to Sign-in into nef?](#-how-to-sign-in-into-nef)
 
 #### Request
 - **POST** /signin
@@ -16,7 +16,24 @@ You can read more about how sign-in works in the [How to Sign-in into nef?](#-ho
 - **Content-Type** application/json
 - **Body** AppleSignInResponse
 
+
+### Generate Playground Book
+Generates a Playground Book given a recipe.
+> This repo provides `NefEditorData` module in order to keep sync the models for request/response between client and backend.
+
+#### Request
+- **POST** /playgroundBook
+- **Accept** application/json
+- **Content-Type** application/json
+- **Authorization** Bearer
+- **Body** PlaygroundRecipe
+
+#### Response
+- **Content-Type** application/json
+- **Body** PlaygroundBookGenerated
+
 &nbsp;
+
 
 ## 🗝 How to Sign-in into nef?
 
