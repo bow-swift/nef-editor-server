@@ -7,42 +7,42 @@
 
 Welcome to server-side for nef Playgrounds!
 
-It provides the services for [nef client](https://github.com/47deg/nef-editor-client). In the next lines, you will find information about APIs specification, how nef has integrated Apple Sign-in, and how does it generate a Playground Book.
+It provides the services for [nef client](https://github.com/bow-swift/nef-editor-client). In the next lines, you will find information about APIs specification, how nef has integrated Apple Sign-in, and how does it generate a Playground Book.
 
-It is an awesome project that mixes a lot of technologies to run Swift in backend.
-- [**Vapor**](https://vapor.codes/): a Web Framework for Swift that works on macOS and **Ubuntu**
+It is a project that mixes a lot of technologies to run Swift in the backend.
+- [**Vapor**](https://vapor.codes/): a Framework for Server-side Swift that runs on macOS and **Ubuntu**.
 - [**Bow**](https://bow-swift.io/): a cross-platform library for Typed **Functional Programming** in Swift.
-- [**nef**](https://nef.bow-swift.io): a lot of cool features for Playgrounds; it lets us build a **Playground Book** with external dependencies defined in a Swift Package.
-- [**Bow OpenAPI**](https://openapi.bow-swift.io): auto derivate **functional HTTP clients** given an OpenAPI specification. Let us derivate clients for Apple APIs.
+- [**nef**](https://nef.bow-swift.io): a lot of cool features for Playgrounds; in particular, it lets us build a **Playground Book** with external dependencies defined in a Swift Package.
+- [**Bow OpenAPI**](https://openapi.bow-swift.io): auto generate **functional HTTP clients** given an OpenAPI specification. It lets us create a network client for Apple APIs.
 
 &nbsp;
 
 
 ## 🗝 How to Sign-in with nef?
 
-Apple announced in 2019 a new feature, "Sign In with Apple" enabling users to sign in to apps using their Apple ID. Apple positioned this feature as a fast, secure, and privacy-friendly way for users to set up an account and start using your apps. It sounds like a great solution for our app to enable **authorized services** without having to rely on external identity providers.
+Apple announced in 2019 a new feature, *Sign In with Apple*, enabling users to sign in to apps using their Apple ID. Apple presented this feature as a fast, secure, and privacy-friendly way for users to set up an account and start using your apps. It sounds like a great solution for our app to enable **authorized services** without having to rely on external identity providers.
 
 ### Client
-1. Users will use Apple provider, and they will sign in using their two-factor authentication Apple ID (Face ID or Touch ID on passcode-protected devices).
-2. Users grant/deny permissions that application requested.
-3. Apple ID servers direct users back to the application, along with a token. This token contains identity token (JWT) and an authorization code, between other user's information.
-4. The application then uses this user's information to sign-in; the client will send **AppleSignInRequest**.
+1. Users will use Apple authentication services, and they will sign in using their Apple ID account (using Face ID or Touch ID on passcode-protected devices).
+2. Users grant/deny permissions requested by the application.
+3. Apple ID servers returns users back to the application, along with a token. This token contains an identity token (JWT) and an authorization code, together with additional user information.
+4. The application then uses this user's information to sign-in; the client will send an **AppleSignInRequest**.
 
 ### Backend
-1. Using the JWT and the authorization code (AppleSignInRequest), received from the client, it will be used to retrieve information from Apple ID servers.
-2. App server will verify the JWT (identity token) received.
-   - Verify the JWS E256 **signature** using the apple's public key.
-   - Verify that the **iss** field contains https://appleid.apple.com.
-   - Verify that the **aud** field is the developer's client_id.
-   - Verify that the **time** is earlier than the exp value of the token.
+1. Using the JWT and the authorization code, received from the client, it will retrieve information from Apple ID servers.
+2. App server will verify the received JWT (identity token).
+   - Verify the JWS E256 **signature** uses Apple's public key.
+   - Verify that the **iss** field contains `https://appleid.apple.com`.
+   - Verify that the **aud** field is the developer's `client_id`.
+   - Verify that the **time** is earlier than the expiration time of the token.
 3. Using the **authorization code** received from the client, and the **verified JWT**, app server will retrieve user's information from Apple ID servers.
-4. App server uses received user's information to sign-in, and come back to the client, **AppleSignInResponse**.
+4. App server uses received user's information to sign-in, and come back to the client, returning an **AppleSignInResponse**.
 
 
 <details>
 <summary>📣 Sequence Diagram</summary>
 <p align="center">
-    <img src="assets/sign-in.png" alt="Apple sign-on flow" width="100%"/>
+    <img src="assets/sign-in.png" alt="Apple sign-in flow" width="100%"/>
 </p>
 </details>
 
@@ -51,17 +51,17 @@ Apple announced in 2019 a new feature, "Sign In with Apple" enabling users to si
 
 ## ⚙️ How to generate a Playground Book?
 
-nef has been migrated to FP and modularized in [version 0.6](https://github.com/bow-swift/nef/releases/tag/0.6.0); it lets us use nef as a library and takes advantage of its features in the backend. We will focus on the functionality to create a [Playground Book](https://github.com/bow-swift/nef#-creating-a-playground-book) with external dependencies given a Swift Package.
+nef has been migrated to FP and modularized in [version 0.6](https://github.com/bow-swift/nef/releases/tag/0.6.0); we can use it as a library and take advantage of its features in the backend. We will focus on the functionality to create a [Playground Book](https://github.com/bow-swift/nef#-creating-a-playground-book) with external dependencies given a Swift Package.
 
 ### Client
 1. Users must be authenticated, use the **token** received after Sign In with Apple.
-2. Users sends a list of swift dependencies.
+2. Users sends a list of Swift dependencies.
 
 ### Backend
 1. The application validates the received token.
    - Verify the **signature** using the server's public key.
-   - Verify that the **iss** field contains the *client_id*.
-   - Verify that the **time** is earlier than the exp value of the token.
+   - Verify that the **iss** field contains the `client_id`.
+   - Verify that the **time** is earlier than the expiration date of the token.
 2. Build the Playground Book using nef, and return it compressed to the client.
 
 <details>
@@ -86,14 +86,14 @@ docker run --env-file <environment path> --rm -p 8080:8080 -it nef-playgrounds:l
 > Read "Secrets" section for more information about how to setup environment variables.
 
 ### Secrets
-[Vapor 4](https://docs.vapor.codes/4.0/environment/) has added support to `.env` files; it lets us sharing secrets with Vapor application, and configure the app server dynamically, making it easy to configure environment variables without needing to set them manually.
+[Vapor 4](https://docs.vapor.codes/4.0/environment/) has added support for `.env` files; it lets us share secrets with our Vapor application, and configure the app server dynamically, making it easy to configure environment variables without needing to set them manually.
 
-This application needs to work the next secrets:
-- **p8Key**: private key for client authentication. A key generated by the WWDR portal, and associated to you app identifier.
+This application needs the following secrets to work:
+- **p8Key**: private key for client authentication. A key generated by the WWDR portal, and associated to your app identifier.
 - **keyId**: key ID of private key for client authentication.
 - **teamId**: your Apple Team ID.
 - **clientId**: the application identifier for your app; it is the client's bundle ID.
-- **redirectURI**: it must include a domain name, and it is associated to your app identifier (Sign In with Apple) in the WWDR portal.
+- **redirectURI**: it must include a domain name, and it is associated to your app identifier (under the *Sign In with Apple* capability) in the WWDR portal.
 - **publicRS256Key**: public key used to validate the signature for received JWT (using RSA Signature with SHA-256 asymetric algorithm).
 - **privateRS256Key**: private key used to sign generated client JWT (using RSA Signature with SHA-256 asymetric algorithm).
 
@@ -137,7 +137,7 @@ Generates a Playground Book given a recipe.
 - **Content-Type** application/json
 - **Body** PlaygroundBookGenerated
 
-> This repo provides `NefEditorData` module in order to keep sync the models for request/response between client and backend.
+> This repo provides `NefEditorData` module in order to keep the models for request/response in sync between frontend and backend.
 
 &nbsp;
 
