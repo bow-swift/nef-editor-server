@@ -42,7 +42,7 @@ Apple announced in 2019 a new feature, *Sign In with Apple*, enabling users to s
 <details>
 <summary>📣 Sequence Diagram</summary>
 <p align="center">
-    <img src="assets/sign-in.png" alt="Apple sign-in flow" width="100%"/>
+    <img src="assets/sign-in.png" alt="Apple sign-in flow"/>
 </p>
 </details>
 
@@ -67,7 +67,7 @@ nef has been migrated to FP and modularized in [version 0.6](https://github.com/
 <details>
 <summary>📣 Sequence Diagram</summary>
 <p align="center">
-    <img src="assets/playground-book.png" alt="Generate Playground Book" width="75%"/>
+    <img src="assets/playground-book.png" alt="Generate Playground Book"/>
 </p>
 </details>
 
