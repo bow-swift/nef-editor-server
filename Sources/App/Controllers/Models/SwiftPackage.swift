@@ -8,13 +8,14 @@ struct SwiftPackage: Codable {
 
 extension PlaygroundRecipe {
     var swiftPackage: SwiftPackage {
+        let packageName = "\(name)-\(UUID())"
         let listOfDependencies = dependencies.map { "\t\t\($0.swiftPackage)" }.joined(separator: ",\n")
         let content =   """
                         // swift-tools-version:5.1
                         import PackageDescription
 
                         let package = Package(
-                            name: "\(name)",
+                            name: "\(packageName)",
                             dependencies: [
                         \(listOfDependencies)
                             ]
