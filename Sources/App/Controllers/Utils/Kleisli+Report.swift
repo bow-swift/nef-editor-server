@@ -30,7 +30,7 @@ extension Kleisli where F == IOPartial<PlaygroundBookError>, D: HasWebSocketOutp
 
 extension Kleisli {
     func foldMTap<E: Swift.Error, B>(_ f: @escaping (E) -> EnvIO<D, E, B>,
-                               _ g: @escaping (A) -> EnvIO<D, E, B>) -> EnvIO<D, E, A> where F == IOPartial<E> {
+                                     _ g: @escaping (A) -> EnvIO<D, E, B>) -> EnvIO<D, E, A> where F == IOPartial<E> {
         flatTap(g).handleErrorWith { e in
             f(e).followedBy(.raiseError(e))
         }^
@@ -40,5 +40,20 @@ extension Kleisli {
 extension Error {
     var commandError: PlaygroundBookCommandError {
         .init(description: "\(self)", code: "500")
+    }
+}
+
+
+extension Kleisli where D: HasLogger {
+    func logger<E: Swift.Error>(_ f: @escaping (E) -> String,
+                                _ g: @escaping (A) -> String) -> EnvIO<D, E, A> where F == IOPartial<E> {
+        foldMTap(
+            { error in
+                EnvIO.access { env in env.logger.error("\(f(error))") }^
+            },
+            { value in
+                EnvIO.access { env in env.logger.info("\(g(value))") }^
+            }
+        )
     }
 }

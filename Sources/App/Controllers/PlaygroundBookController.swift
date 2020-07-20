@@ -24,8 +24,11 @@ final class PlaygroundBookController {
     }
     
     func handle(request: Request) throws -> String {
-        try run(request: request)
-            .unsafeRunSync(with: config, on: queue)
+        try run(request: request).contramap(\.config)
+            .logger({ error in "HTTP Error: \(error)" },
+                    { response in "HTTP Response: \(response)" })
+            .provide(PlaygroundBookLogger(config: config, logger: request.logger))
+            .unsafeRunSync(on: queue)
     }
     
     // MARK: - private methods

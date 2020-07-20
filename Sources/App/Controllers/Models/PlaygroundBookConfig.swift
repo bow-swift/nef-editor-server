@@ -2,10 +2,15 @@ import Foundation
 import BowEffects
 import BowOptics
 import nef
+import Vapor
 
+protocol HasLogger {
+    var logger: Logger { get }
+}
 
 // MARK: - PlaygroundBookConfig
 typealias PlaygroundBookResource = IOResource<PlaygroundBookError, URL>
+
 
 struct PlaygroundBookConfig: AutoLens {
     let outputDirectory: URL
@@ -34,6 +39,16 @@ extension PlaygroundBookConfig {
     }
 }
 
+struct PlaygroundBookLogger: HasLogger {
+    let config: PlaygroundBookConfig
+    let logger: Logger
+    
+    init(config: PlaygroundBookConfig, logger: Logger) {
+        self.logger = logger
+        self.config = PlaygroundBookConfig.lens(for: \.progressReport).set(config, VaporProgressReport(logger: logger))
+    }
+}
+
 
 // MARK: - PlaygroundBookConfig for WebSockets
 struct PlaygroundBookSocketConfig: HasWebSocketOutput, HasCommandCodable {
@@ -57,5 +72,15 @@ struct PlaygroundBookSocketConfig: HasWebSocketOutput, HasCommandCodable {
 private struct EmptyProgressReport: ProgressReport {
     func notify<E: Swift.Error, A: CustomProgressDescription>(_ event: ProgressEvent<A>) -> IO<E, Void> {
         .pure(())^
+    }
+}
+
+private struct VaporProgressReport: ProgressReport {
+    let logger: Logger
+
+    func notify<E: Swift.Error, A: CustomProgressDescription>(_ event: ProgressEvent<A>) -> IO<E, Void> {
+        .pure(
+            logger.info("[\(event.step.currentStep)/\(event.step.totalSteps) - \(event.status)] \(event.step.progressDescription)")
+        )^
     }
 }

@@ -33,7 +33,7 @@ final class PlaygroundBookServer: PlaygroundBook {
         let command = EnvIO<PlaygroundBookSocketConfig, PlaygroundBookError, PlaygroundBookCommand.Incoming>.var()
         
         return binding(
-            env <- .ask(),
+                env <- .ask(),
             command <- env.get.commandDecoder
                               .safeDecode(PlaygroundBookCommand.Incoming.self, from: data)
                               .mapError { e in .invalidCommand(e) },
