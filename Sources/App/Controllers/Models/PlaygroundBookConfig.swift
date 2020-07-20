@@ -79,8 +79,8 @@ private struct VaporProgressReport: ProgressReport {
     let logger: Logger
 
     func notify<E: Swift.Error, A: CustomProgressDescription>(_ event: ProgressEvent<A>) -> IO<E, Void> {
-        .pure(
-            logger.info("[\(event.step.currentStep)/\(event.step.totalSteps) - \(event.status)] \(event.step.progressDescription)")
-        )^
+        IO.invoke {
+            self.logger.info("[\(event.step.currentStep)/\(event.step.totalSteps) - \(event.status)] \(event.step.progressDescription)")
+        }^
     }
 }

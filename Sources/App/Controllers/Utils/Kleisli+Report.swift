@@ -45,8 +45,8 @@ extension Error {
 
 
 extension Kleisli where D: HasLogger {
-    func logger<E: Swift.Error>(_ f: @escaping (E) -> String,
-                                _ g: @escaping (A) -> String) -> EnvIO<D, E, A> where F == IOPartial<E> {
+    func loggerM<E: Swift.Error>(_ f: @escaping (E) -> String,
+                                 _ g: @escaping (A) -> String) -> EnvIO<D, E, A> where F == IOPartial<E> {
         foldMTap(
             { error in
                 EnvIO.access { env in env.logger.error("\(f(error))") }^
@@ -55,5 +55,17 @@ extension Kleisli where D: HasLogger {
                 EnvIO.access { env in env.logger.info("\(g(value))") }^
             }
         )
+    }
+    
+    func loggerInfo<E: Swift.Error>(_ g: @escaping () -> String) -> EnvIO<D, E, A> where F == IOPartial<E> {
+        flatTap(
+            { _ in
+                EnvIO.access { env in env.logger.info("\(g())") }^
+            }
+        ).flatTapError(
+            { _ in
+                EnvIO.access { env in env.logger.info("\(g())") }^
+            }
+        )^
     }
 }
