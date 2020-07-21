@@ -29,4 +29,4 @@ WORKDIR /run
 COPY --from=build /app/.build/release /run
 
 ENTRYPOINT ["./Run"]
-CMD ["serve", "--env", "production", "--hostname", "0.0.0.0"]
+CMD ["serve", "--env", "production", "--hostname", "0.0.0.0", "--log", "debug"]

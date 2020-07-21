@@ -12,7 +12,7 @@ let package = Package(
         .library(name: "NefEditorUtils", targets: ["NefEditorUtils"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/vapor/vapor.git", .exact("4.3.1")),
+        .package(url: "https://github.com/vapor/vapor.git", .exact("4.26.0")),
         .package(url: "https://github.com/vapor/jwt-kit.git", from: "4.0.0-rc.1.4"),
         .package(name: "SwiftJWT", url: "https://github.com/IBM-Swift/Swift-JWT.git", .exact("3.6.1")),
         .package(url: "https://github.com/weichsel/ZIPFoundation.git", .exact("0.9.11")),
