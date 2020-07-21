@@ -25,9 +25,9 @@ final class PlaygroundBookController {
     
     func handle(request: Request) throws -> String {
         try run(request: request).contramap(\.config)
-            .loggerInfo { "HTTP Request: \(request.body.string ?? "empty")" }
-            .loggerM({ error in "HTTP Error: \(error)" },
-                     { response in "HTTP Response: \(response)" })
+            .logInfo { "HTTP Request: \(request.body.string ?? "empty")" }
+            .log({ error in "HTTP Error: \(error)" },
+                 { response in "HTTP Response: \(response)" })
             .provide(PlaygroundBookLogger(config: config, logger: request.logger))
             .unsafeRunSync(on: queue)
     }
