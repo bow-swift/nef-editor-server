@@ -11,11 +11,13 @@ public struct PlaygroundDependency: Codable {
     public let name: String
     public let url: String
     public let requirement: Requirement
+    public let products: [String]
     
-    public init(name: String, url: String, requirement: Requirement) {
+    public init(name: String, url: String, requirement: Requirement, products: [String] = []) {
         self.name = name
         self.url = url
         self.requirement = requirement
+        self.products = products
     }
 }
 
