@@ -3,6 +3,7 @@ import nef
 import Bow
 import BowEffects
 import AppleSignIn
+import NefEditorError
 
 final class AppleSignInClient: SignInClient {
     
@@ -123,7 +124,7 @@ final class AppleSignInClient: SignInClient {
         return binding(
                  payload <- self.payload(tokenResponse: tokenResponse),
            bearerPayload <- self.generateBearerPayload(payload: payload.get),
-                  bearer <- self.generateBearer(payload: bearerPayload.get),
+                  bearer <- self.signBearerPayload(bearerPayload.get),
         yield: bearer.get)^
             .contramap(\.environment.bearer)
             .mapError(SignInError.bearer)
@@ -132,7 +133,7 @@ final class AppleSignInClient: SignInClient {
     private func payload(tokenResponse: AppleSignInTokenResponse) -> EnvIO<BearerEnvironment, BearerError, AppleTokenPayload> {
         EnvIO.invokeResult { _ in
             AppleTokenPayload.jwtSigners.unverifiedPayload(token: tokenResponse.idToken)
-                .mapError(BearerError.invalidPayload)
+                .mapError { _ in BearerError.invalidPayload(.appleToken) }
         }
     }
     
@@ -145,7 +146,7 @@ final class AppleSignInClient: SignInClient {
         }
     }
     
-    private func generateBearer(payload: BearerPayload) -> EnvIO<BearerEnvironment, BearerError, String> {
+    private func signBearerPayload(_ payload: BearerPayload) -> EnvIO<BearerEnvironment, BearerError, String> {
         EnvIO.invokeResult { env in
             Bearer(payload: payload).sign(rs256: env.privateKey)
         }

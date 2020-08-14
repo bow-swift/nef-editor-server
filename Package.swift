@@ -9,6 +9,7 @@ let package = Package(
     ],
     products: [
         .library(name: "NefEditorData", targets: ["NefEditorData"]),
+        .library(name: "NefEditorError", targets: ["NefEditorError"]),
         .library(name: "NefEditorUtils", targets: ["NefEditorUtils"]),
     ],
     dependencies: [
@@ -22,6 +23,7 @@ let package = Package(
     ],
     targets: [
         .target(name: "NefEditorData"),
+        .target(name: "NefEditorError"),
         .target(name: "NefEditorUtils", dependencies: [
             .product(name: "Bow", package: "Bow"),
             .product(name: "BowEffects", package: "Bow"),
@@ -29,6 +31,7 @@ let package = Package(
         ]),
         .target(name: "App", dependencies: [
             .target(name: "NefEditorData"),
+            .target(name: "NefEditorError"),
             .target(name: "NefEditorUtils"),
             .product(name: "AppleSignIn", package: "AppleSignIn"),
             .product(name: "Vapor", package: "vapor"),

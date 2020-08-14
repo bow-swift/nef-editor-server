@@ -1,4 +1,5 @@
 import Foundation
+import NefEditorError
 
 enum SignInError: Error {
     case invalidCodification(CodificationError)

@@ -32,6 +32,7 @@ Package.resolved
 /Sources/Clients/AppleSignIn
 
 ## Vapor
+.env
 .env.*
 .run
 

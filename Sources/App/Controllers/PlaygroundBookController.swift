@@ -2,6 +2,7 @@ import Vapor
 import Bow
 import BowEffects
 import NefEditorData
+import NefEditorError
 
 final class PlaygroundBookController {
     private let playgroundBook: PlaygroundBook
