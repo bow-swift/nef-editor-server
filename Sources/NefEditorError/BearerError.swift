@@ -61,7 +61,7 @@ extension BearerError: Codable {
         } else if let invalidPayload = try? container.decode(PayloadError.self, forKey: .invalidPayload) {
             self = .invalidPayload(invalidPayload)
         } else {
-            throw GeneralError.unknown
+            throw GeneralError.keyNotFound
         }
     }
 }

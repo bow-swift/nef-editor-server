@@ -1,5 +1,7 @@
 import Foundation
 
 public enum GeneralError: Error {
-    case unknown
+    case dataCorrupted
+    case keyNotFound
+    case valueNotFound
 }
