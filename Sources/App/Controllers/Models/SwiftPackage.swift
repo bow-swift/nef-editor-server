@@ -9,15 +9,24 @@ struct SwiftPackage: Codable {
 extension PlaygroundRecipe {
     var swiftPackage: SwiftPackage {
         let packageName = "\(name)-\(UUID())"
-        let listOfDependencies = dependencies.map { "\t\t\($0.swiftPackage)" }.joined(separator: ",\n")
+        let listOfDependencies = dependencies.map { "\t\t\($0.package)" }.joined(separator: ",\n")
+        let listOfTargets = dependencies.map { "\t\t\($0.target)" }.joined(separator: ",\n")
+        let listOfTargetsNames = dependencies.map { "\"\($0.targetName)\"" }.joined(separator: ", ")
+        
         let content =   """
-                        // swift-tools-version:5.1
+                        // swift-tools-version:5.2
                         import PackageDescription
 
                         let package = Package(
                             name: "\(packageName)",
+                            products: [
+                                .library(name: "\(packageName)", targets: [\(listOfTargetsNames)])
+                            ],
                             dependencies: [
                         \(listOfDependencies)
+                            ],
+                            targets: [
+                        \(listOfTargets)
                             ]
                         )
                         """
@@ -28,8 +37,36 @@ extension PlaygroundRecipe {
 
 
 extension PlaygroundDependency {
-    var swiftPackage: String {
-        ".package(url: \"\(url)\", \(requirement.swiftPackage))"
+       
+    var targetName: String {
+        "\(swiftPackageName)-target"
+    }
+    
+    var dependencyName: String {
+        "\(swiftPackageName)-dependency"
+    }
+    
+    var package: String {
+        if self.products.count > 0 {
+            return ".package(url: \"\(url)\", \(requirement.swiftPackage))"
+        } else {
+            return ".package(name: \"\(dependencyName)\", url: \"\(url)\", \(requirement.swiftPackage))"
+        }
+    }
+    
+    var target: String {
+        if self.products.count > 0 {
+            let listOfDependencies = products.map { "\"\($0)\"" }.joined(separator: ", ")
+            return ".target(name: \"\(targetName)\", dependencies: [\(listOfDependencies)])"
+        } else {
+            return ".target(name: \"\(targetName)\", dependencies: [\"\(dependencyName)\"])"
+        }
+    }
+    
+    private var swiftPackageName: String {
+        name.lowercased()
+            .replacingFirstOccurrence(of: " ", with: "-")
+            .trimmingEmptyCharacters
     }
 }
 

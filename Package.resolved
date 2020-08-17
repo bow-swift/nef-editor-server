@@ -95,8 +95,8 @@
         "package": "nef",
         "repositoryURL": "https://github.com/bow-swift/nef.git",
         "state": {
-          "branch": "develop",
-          "revision": "88f5ec762cdc017ab8b33c054137c45c0a19434b",
+          "branch": "master",
+          "revision": "19791d9ba848f454eafc52599dfd76d660b99e47",
           "version": null
         }
       },
