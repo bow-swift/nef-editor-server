@@ -1,7 +1,7 @@
 import Foundation
 
-public struct PlaygroundDependency: Codable {
-    public enum Requirement: Codable {
+public struct PlaygroundDependency {
+    public enum Requirement {
         case version(String)
         case range(from: String, to: String = "")
         case branch(String)
@@ -22,9 +22,30 @@ public struct PlaygroundDependency: Codable {
 }
 
 
+// MARK: - PlaygroundDependency <Codable>
+
+extension PlaygroundDependency: Codable {
+    private enum CodingKeys: String, CodingKey {
+        case name
+        case url
+        case requirement
+        case products
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+           
+        self.name = try container.decode(String.self, forKey: .name)
+        self.url = try container.decode(String.self, forKey: .url)
+        self.requirement = try container.decode(PlaygroundDependency.Requirement.self, forKey: .requirement)
+        self.products = (try? container.decode([String].self, forKey: .products)) ?? []
+    }
+}
+
+
 // MARK: - PlaygroundDependency.Requirement <Codable>
 
-extension PlaygroundDependency.Requirement {
+extension PlaygroundDependency.Requirement: Codable {
     private enum CodingKeys: String, CodingKey {
         case version
         case versionRangeFrom
