@@ -1,7 +1,7 @@
 import Foundation
 import Bow
 import BowEffects
-
+import NefEditorError
 
 final class AuthorizationServer: Authorization {
     

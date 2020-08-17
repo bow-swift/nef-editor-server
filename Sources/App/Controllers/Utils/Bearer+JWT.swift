@@ -1,4 +1,6 @@
+import Foundation
 import SwiftJWT
+import NefEditorError
 
 extension BearerPayload: Claims {}
 
@@ -13,7 +15,7 @@ extension Bearer {
             let jwtSigner = JWTSigner.rs256(privateKey: pkey)
             var jwt = JWT(header: Header(), claims: payload)
             return try jwt.sign(using: jwtSigner)
-        }.mapError { e in .signing(e) }
+        }.mapError { _ in .signing }
     }
 }
 
@@ -28,6 +30,6 @@ extension String {
             let jwtVerifier = JWTVerifier.rs256(publicKey: pubkey)
             let jwt = try JWT<BearerPayload>(jwtString: self, verifier: jwtVerifier)
             return jwt.claims
-        }.mapError { e in .invalidPayload(e) }
+        }.mapError { e in .invalidPayload(.jwt) }
     }
 }
