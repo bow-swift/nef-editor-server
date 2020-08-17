@@ -11,7 +11,8 @@ macos: bow-openapi-macos dependencies
 
 .PHONY: xcode
 xcode: dependencies
-		vapor xcode -n
+		vapor build
+		swift package generate-xcodeproj 
 
 .PHONY: dependencies
 dependencies:
