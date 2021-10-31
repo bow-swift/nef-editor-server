@@ -167,7 +167,7 @@ It will generate HTTP clients, will resolve the dependencies and will generate t
 
 ## ⚖️ License
 
-    Copyright (C) 2020 The nef Authors
+    Copyright (C) 2020-2021 The nef Authors
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
